@@ -85,7 +85,7 @@ const createCameraElement = () => {
         .getUserMedia({
             audio: false,
             video: {
-                facingMode: { exact: 'environment' }
+                facingMode: 'environment'
             },
         })
         .then((stream) => {
