@@ -78,16 +78,19 @@ const toggleCamera = () => {
     }
 };
 
-const createCameraElement = () => {
+const createCameraElement = async () => {
     isLoading.value = true;
-
-    navigator.mediaDevices
-        .getUserMedia({
-            audio: false,
-            video: {
-                facingMode: 'environment'
-            },
-        })
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const backCamera = devices.find(device => device.kind === 'videoinput' && device.label.toLowerCase().includes('back'));
+    const constraints = {
+        video: {
+            facingMode: 'environment' // This should normally work
+        }
+    };
+    if (backCamera) {
+        constraints.video.deviceId = { exact: backCamera.deviceId };
+    }
+    navigator.mediaDevices.getUserMedia(constraints)
         .then((stream) => {
             isLoading.value = false;
             camera.value.srcObject = stream;
