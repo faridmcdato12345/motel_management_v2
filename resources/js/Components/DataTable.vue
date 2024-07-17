@@ -43,6 +43,7 @@
                         <th scope="col" class="px-6 py-3 text-wrap" v-for="column in columns" :key="column.key">
                             {{ column.label }}
                         </th>
+                        <th v-if="checkout" scope="col" class="px-6 py-3">ACTION</th>
                         <th v-if="action" scope="col" class="px-6 py-3">ACTION</th>
                     </tr>
                 </thead>
@@ -57,6 +58,9 @@
                             <PrimaryButton v-if="addUser" @click="$emit('addUser', item.id)">Add User</PrimaryButton>
                             <PrimaryButton @click="$emit('edit', item.id)">Edit</PrimaryButton>
                             <DangerButton @click="$emit('delete', item.id)">Delete</DangerButton>
+                        </td>
+                        <td v-if="checkout" class="px-6 py-4 flex space-x-4">
+                            <DangerButton @click="$emit('checkout', item.id)">Check Out</DangerButton>
                         </td>
                     </tr>
                 </tbody>
@@ -116,6 +120,10 @@ const props = defineProps({
         required: true
     },
     logo: {
+        type: Boolean,
+        default: false
+    },
+    checkout: {
         type: Boolean,
         default: false
     },

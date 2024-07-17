@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateUserRequest;
+use App\Http\Resources\VoucherResource;
 use App\Models\User;
 use App\Models\Motel;
 use App\Models\Role;
+use App\Models\Voucher;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -55,10 +57,9 @@ class UserController extends Controller
 
     public function home()
     {
-        $user = User::findOrFail(auth()->user()->id);
-        $data = $user->with('vouchers')->get();
+        $vouchers = Voucher::with('guests.types','guests.bookings')->where('user_id',auth()->user()->id)->get();
         return inertia('User/Home',[
-            'guests' => $data
+            'vouchers' => $vouchers
         ]);
     }
 }

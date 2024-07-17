@@ -60,7 +60,7 @@ const doneTakePhoto = ref(false)
 const camera = ref(null);
 const canvas = ref(null);
 
-const emit = defineEmits(['openAiResponse'])
+const emit = defineEmits(['openAiResponse', 'updateData'])
 
 const getOpenAiResponse = (response) => {
     console.log("updated data: ", response)
@@ -174,8 +174,10 @@ const uploadPhoto = async () => {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
+        }).then((result) => {
+            emit('updateData', result.data)
+            console.log('Image uploaded successfully:', result.data);
         });
-        console.log('Image uploaded successfully:', response.data);
     } catch (error) {
         console.error('Error uploading image:', error);
     }

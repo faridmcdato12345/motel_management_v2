@@ -4,10 +4,10 @@
 
     <AuthenticatedLayout>
         <div class="pl-12 pr-4 py-4">
-            <DataTable :data="props.guests.data" :columns="columns" :pagination="props.guests" @limit-query="limitQuery"
-                @search-field-query="searchFieldQuery" @delete="deleteData" @edit="editData"
+            <DataTable :data="props.vouchers" :columns="columns" :pagination="props.vouchers" @limit-query="limitQuery"
+                @search-field-query="searchFieldQuery" @delete="deleteData" @edit="editData" @checkout="checkout"
                 :query-limit="props.queryLimit" :route-create="createRoute" :query-name="props.queryName"
-                :action="true" />
+                :action="false" :checkout="true" />
         </div>
         <div>
             <NavBottom />
@@ -23,15 +23,21 @@ import { ref, onMounted } from "vue"
 import { router, Head, useForm, usePage } from "@inertiajs/vue3";
 
 const columns = ref([
-    { label: 'CASE #', key: 'vouchers.case_number' },
-    { label: 'GUEST NAME', key: 'vouchers.guests.first_name' },
-    { label: 'AGE GROUP', key: 'vouchers.guests.types.name' },
+    { label: 'CASE #', key: 'case_number' },
+    { label: 'GUEST FIRST NAME', key: 'guests.first_name' },
+    { label: 'GUEST LAST NAME', key: 'guests.last_name' },
+    { label: 'AGE GROUP', key: 'guests.types.name' },
+    { label: 'CHECK IN DATE', key: 'guests.bookings.check_in_date' },
+    { label: 'STATUS', key: 'guests.bookings.status' },
 ])
 const props = defineProps({
-    guests: {
+    vouchers: {
         type: Object,
     },
 })
+const checkout = () => {
+    console.log("checkout")
+}
 const limitQuery = (name, e) => {
     let qParams = {}
     let nParams = {}
@@ -76,7 +82,7 @@ const deleteData = (id) => {
     }
 }
 onMounted(() => {
-    console.log(props.guests)
+    console.log(props.vouchers)
 })
 </script>
 
