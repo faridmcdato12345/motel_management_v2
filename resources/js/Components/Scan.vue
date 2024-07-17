@@ -81,15 +81,13 @@ const toggleCamera = () => {
 const createCameraElement = () => {
     isLoading.value = true;
 
-    const constraints = {
-        audio: false,
-        video: {
-            facingMode: { exact: 'environment' }
-        },
-    };
-
     navigator.mediaDevices
-        .getUserMedia(constraints)
+        .getUserMedia({
+            audio: false,
+            video: {
+                facingMode: { exact: 'environment' }
+            },
+        })
         .then((stream) => {
             isLoading.value = false;
             camera.value.srcObject = stream;
