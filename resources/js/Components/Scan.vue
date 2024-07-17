@@ -21,7 +21,7 @@
                 <div class="camera-shutter" :class="{ flash: isShotPhoto }"></div>
                 <video v-show="!isPhotoTaken" ref="camera" class="rounded-lg" :width="450" :height="337.5"
                     autoplay></video>
-                <canvas v-show="isPhotoTaken" id="photoTaken" ref="canvas" :width="450" :height="337.5"></canvas>
+                <canvas v-show="isPhotoTaken" id="photoTaken" ref="canvas" width="450" height="337.5"></canvas>
             </div>
             <div class="flex justify-center mt-4 space-x-2 bg-gray-300 rounded-lg" v-if="isCameraOpen">
                 <button class="px-4 py-2 text-gray-600">Id Card</button>
@@ -110,6 +110,8 @@ const createCameraElement = async () => {
         .then((stream) => {
             isLoading.value = false;
             camera.value.srcObject = stream;
+            camera.value.width = 450;
+            camera.value.height = 337.5;
         })
         .catch((error) => {
             isLoading.value = false;
@@ -140,7 +142,8 @@ const takePhoto = () => {
     isPhotoTaken.value = !isPhotoTaken.value;
 
     const context = canvas.value.getContext('2d');
-    context.drawImage(camera.value, 0, 0, 450, 337.5);
+    context.clearRect(0, 0, canvas.value.width, canvas.value.height);
+    context.drawImage(camera.value, 0, 0, canvas.value.width, canvas.value.height);
     doneTakePhoto.value = true
 };
 const doneAction = () => {
@@ -183,4 +186,9 @@ onMounted(() => {
 })
 </script>
 
-<style scoped></style>
+<style scoped>
+canvas {
+    width: 450px !important;
+    height: 337.5px !important;
+}
+</style>
