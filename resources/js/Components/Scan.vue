@@ -77,11 +77,27 @@ const toggleCamera = () => {
         createCameraElement();
     }
 };
-
+const checkFacingModeSupport = () => {
+    return new Promise((resolve) => {
+        navigator.mediaDevices.getUserMedia({
+            video: { facingMode: 'environment' }
+        })
+            .then(() => resolve(true))
+            .catch(() => resolve(false))
+    })
+}
 const createCameraElement = async () => {
+    checkFacingModeSupport().then((isSupported) => {
+        if (isSupported) {
+            console.log('Facing Mode is supported');
+        } else {
+            console.log('Facing Mode is not supported');
+        }
+    })
     isLoading.value = true;
     const devices = await navigator.mediaDevices.enumerateDevices();
     const backCamera = devices.find(device => device.kind === 'videoinput' && device.label.toLowerCase().includes('back'));
+    console.log(backCamera)
     const constraints = {
         video: {
             facingMode: 'environment' // This should normally work
