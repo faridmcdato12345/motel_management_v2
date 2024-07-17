@@ -1,0 +1,112 @@
+<template>
+    <div>
+        <div>
+            <p class="font-black text-lg">VOUCHER</p>
+        </div>
+        <div class="border-2 border-dashed border-gray-300 p-5 cursor-pointer flex items-center justify-center"
+            @dragover.prevent @drop.prevent="handleDrop">
+            <div>
+                <input type="file" ref="fileInput" @change="handleFileSelect" hidden multiple />
+                <div class="flex flex-col items-center">
+                    <p>Drag and drop file here</p>
+                    <p>or</p>
+                </div>
+                <button class="bg-blue-500 text-white py-2 px-4 rounded w-full" @click="browseFiles">Browse for
+                    file</button>
+            </div>
+        </div>
+        <div class="mt-5">
+            <div v-for="file in files" :key="file.name"
+                class="flex items-center justify-between mt-2 p-2 border border-gray-300 rounded">
+                <p>{{ file.name }}</p>
+                <div class="w-full ml-4">
+                    <div v-if="file.uploading" class="h-2 bg-gray-200 rounded">
+                        <div class="h-2 bg-green-500 rounded transition-all duration-500 ease-linear"
+                            :style="{ width: file.progress + '%' }"></div>
+                    </div>
+                </div>
+                <button class="ml-4 text-red-500" @click="removeFile(file)">
+                    Remove
+                </button>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+import { router } from '@inertiajs/vue3';
+import axios from 'axios';
+
+const file = ref(null);
+const imageUrl = ref(null);
+const responseData = ref({})
+const fileInput = ref(null);
+const files = ref([]);
+
+const emit = defineEmits(['updateData'])
+
+const browseFiles = () => {
+    fileInput.value.click();
+};
+const handleFileUpload = (event) => {
+    file.value = event.target.files[0];
+};
+const handleFileSelect = (event) => {
+    handleFiles(event.target.files);
+};
+const handleDrop = (event) => {
+    handleFiles(event.dataTransfer.files);
+};
+const handleFiles = (selectedFiles) => {
+    for (const file of selectedFiles) {
+        const fileObj = {
+            file,
+            name: file.name,
+            uploading: true,
+            progress: 0
+        };
+        files.value.push(fileObj);
+        uploadFile(fileObj);
+    }
+};
+
+const uploadFile = (fileObj) => {
+
+    const formData = new FormData();
+    formData.append('image', fileObj.file);
+
+    try {
+        const response = axios.post(route('upload.voucher'), formData, {
+            onUploadProgress: (progressEvent) => {
+                console.log("wtf: ", progressEvent);
+                const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                fileObj.progress = percentCompleted;
+            },
+
+        }).then((result) => {
+            fileObj.uploading = false;
+            responseData.value = result.data
+            emit('updateData', result.data)
+            console.log("responseData: ", responseData.value)
+        }).catch(() => {
+            fileObj.uploading = false;
+        });
+    } catch (error) {
+        console.error('Error uploading image:', error);
+    }
+};
+const removeFile = (file) => {
+    const index = files.value.indexOf(file);
+    if (index > -1) {
+        files.value.splice(index, 1);
+    }
+};
+</script>
+
+<style scoped>
+img {
+    max-width: 100%;
+    height: auto;
+}
+</style>

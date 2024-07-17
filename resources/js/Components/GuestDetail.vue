@@ -1,0 +1,97 @@
+<template>
+    <div>
+        <div v-if="isMultiForm" class="multi">
+            <div v-for="(formSection, index) in gptData" :key="index">
+                <MultiFormSection :modelValue="formSection" v-if="step === index"
+                    @update:modelValue="value => updateFormSection(value, index)"
+                    :is-multi-client="isMultiClient = false" @compiledData="handleCompiledData"
+                    :guest-types="guestTypes" :room-numbers="roomNumbers" />
+            </div>
+        </div>
+        <div class="form" v-else>
+            <FormSection :modelValue="gptData" :is-multi-client="isMultiClient" :clients="props.gptData.clients"
+                @update:modelValue="value => updateFormSection(value)" :guest-types="guestTypes"
+                :room-numbers="roomNumbers" />
+        </div>
+        <div class="flex justify-between mt-4 space-x-4">
+            <div v-if="step > 0" class="flex justify-center w-full bg-red-800 rounded-md">
+                <Button :label="'Back'" btn-block :darken="step >= 3" class="  p-4 " color="success"
+                    @click.prevent="prevStep" />
+            </div>
+            <div class="flex justify-center w-full bg-blue-400 rounded-md">
+                <Button :label="step < props.gptData.length - 1 ? 'Next' : 'Check In'" btn-block
+                    :darken="step >= props.gptData.length - 1" class="p-4" color="success" @click.prevent="nextStep" />
+            </div>
+        </div>
+    </div>
+</template>
+
+<script setup>
+import Button from "./Button.vue";
+import { useForm } from "@inertiajs/vue3";
+import { onMounted, ref } from "vue";
+import FormSection from "./FormSection.vue";
+import MultiFormSection from "@/Components/MultiFormSection.vue"
+import useData from "@/Composables/useData";
+import axios from "axios";
+
+const { storeItem, fetchItem } = useData()
+
+const props = defineProps({
+    gptData: Object,
+    guestTypes: Object,
+    roomNumbers: Object
+})
+const isMultiClient = ref(false)
+const isMultiForm = ref(false)
+const emit = defineEmits(['update:gptData', 'compiledData']);
+
+const formData = useForm({
+    case_number: props.gptData.case_number,
+    days: props.gptData.days,
+    amount: props.gptData.amount,
+    self_pay: props.gptData.contribution,
+    guest_name: props.gptData.clients
+})
+const step = ref(0)
+const nextStep = async () => {
+    if (step.value == props.gptData.length - 1) {
+        console.log(props.gptData)
+        emit('compiledData', props.gptData);
+        const result = await storeItem('/guest/store/multi_client', props.gptData)
+        if (result.success) {
+            console.log("success storing voucher")
+        } else {
+            console.log("error: ", result.error)
+        }
+    }
+
+    if (step.value < props.gptData.length) {
+        console.log(props.gptData)
+        step.value++
+    }
+}
+const prevStep = () => {
+    step.value--
+}
+
+const updateFormSection = (value, index) => {
+    const updatedData = [...props.gptData];
+    updatedData[index] = value;
+    emit('update:gptData', updatedData);
+};
+const compileAllData = () => {
+    emit('compiledData', props.gptData);
+};
+onMounted(() => {
+    console.log("roomNumbers guestde: ", props.roomNumbers)
+    if (props.gptData.length > 1) {
+        isMultiForm.value = true
+    } else if (props.gptData.clients.length > 1) {
+        isMultiClient.value = true
+    }
+})
+</script>
+
+
+<style lang="scss" scoped></style>
