@@ -17,7 +17,7 @@ class ImgurService
         $this->client = new Client([
             'base_uri' => 'https://api.imgur.com/3/',
             'headers' => [
-                'Authorization' => 'Client-ID '.env('IMGUR_CLIENT_ID'),
+                'Authorization' => config('app.env') === 'local' ? 'Client-ID 6ec5a04a264fdfc' : 'Client-ID '.env('IMGUR_CLIENT_ID'),
             ],
         ]);
     }
@@ -54,7 +54,6 @@ class ImgurService
             Log::info('Image uploaded to Imgur, response: ' . $response->getBody());
             return json_decode($response->getBody(), true);
         }catch(RequestException  $e){
-            dd("RequestException");
             Log::error('Error uploading image to Imgur: ' . $e->getMessage());
             if ($e->hasResponse()) {
                 Log::error('Response: ' . $e->getResponse()->getBody()->getContents());

@@ -21,10 +21,9 @@ class MotelController extends Controller
         }
         $limit = $request->has('query') ? $request->query('query'): 5;
         $motels = $query->paginate(intval($limit))->withQueryString();
-        //dd(MotelResource::collection($motels));
         return inertia('Motel/Index',[
-            'userRoles' => $request->user_roles,
-            'userPermissions' => $request->user_permissions,
+            'roles' => auth()->user()->getRoleNames(),
+            'permissions' => auth()->user()->getAllPermissions()->pluck('name'),
             'user' => auth()->user(),
             'queryLimit' => intval($limit),
             'queryName' => $request->has('name') ? $request->query('name') : null,

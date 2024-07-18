@@ -26,7 +26,7 @@ class RoomController extends Controller
         $rooms = $query->with(['rates' => function ($query){
             $query->select('id','price_per_night');
         }])->paginate(intval($limit))->withQueryString();
-        //return $rooms;
+       
         return inertia('Room/Index',[
             'queryLimit' => intval($limit),
             'queryName' => $request->has('name') ? $request->query('name') : null,

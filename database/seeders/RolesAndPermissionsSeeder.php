@@ -60,7 +60,7 @@ class RolesAndPermissionsSeeder extends Seeder
         Permission::create(['name' => 'show motel admin user']);
 
         // Create roles and assign permissions
-        $adminRole = Role::create(['name' => 'Super admin']);
+        $adminRole = Role::create(['name' => 'Super Admin']);
         $adminRole->givePermissionTo(Permission::all());
 
         $motelAdmin = Role::create(['name' => 'Motel Admin']);
@@ -87,10 +87,6 @@ class RolesAndPermissionsSeeder extends Seeder
             'edit guest type',
             'delete guest type',
             'show guest type',
-            'create user',
-            'edit user',
-            'delete user',
-            'show user',
         ]);
     }
 }

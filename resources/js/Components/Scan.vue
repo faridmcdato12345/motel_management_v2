@@ -2,13 +2,6 @@
     <div class="flex items-center justify-center">
         <div>
             <!-- <FileUpload @update-data="getOpenAiResponse" /> -->
-            <div class="camera-button">
-                <button type="button" class="button is-rounded"
-                    :class="{ 'is-primary': !isCameraOpen, 'is-danger': isCameraOpen }" @click="toggleCamera">
-                    <span v-if="!isCameraOpen">Open Camera</span>
-                    <span v-else>Close Camera</span>
-                </button>
-            </div>
             <div v-show="isCameraOpen && isLoading" class="camera-loading">
                 <ul class="loader-circle">
                     <li></li>
@@ -35,10 +28,15 @@
                         <div class="w-16 h-16 rounded-full border-4 border-white bg-blue-600"></div>
                     </div>
                 </div>
-                <button class="bg-blue-500 text-white px-4 py-2 rounded" v-if="done"
-                    @click.prevent="doneAction">Done</button>
-                <button class="bg-blue-500 text-white px-4 py-2 rounded" v-else
-                    @click.prevent="uploadPhoto">Next</button>
+                <div v-if="!loading">
+                    <button class="bg-blue-500 text-white px-4 py-2 rounded" v-if="done"
+                        @click.prevent="doneAction">Done</button>
+                    <button class="bg-blue-500 text-white px-4 py-2 rounded" v-else
+                        @click.prevent="uploadPhoto">Next</button>
+                </div>
+                <div v-else>
+                    <Spinner />
+                </div>
             </div>
         </div>
     </div>
@@ -46,6 +44,7 @@
 </template>
 
 <script setup>
+import Spinner from './Spinner.vue';
 import FileUpload from './FileUpload.vue';
 import { onMounted, ref } from 'vue';
 
@@ -55,6 +54,7 @@ const isPhotoTaken = ref(false);
 const isShotPhoto = ref(false);
 const isLoading = ref(false);
 const done = ref(true)
+const loading = ref(false)
 const doneTakePhoto = ref(false)
 
 const camera = ref(null);
@@ -147,7 +147,6 @@ const takePhoto = () => {
     doneTakePhoto.value = true
 };
 const doneAction = () => {
-    console.log(doneTakePhoto.value)
     if (doneTakePhoto.value == true) {
         done.value = false
     }
@@ -164,6 +163,7 @@ const dataURLtoBlob = (dataURL) => {
     return new Blob([u8arr], { type: mime });
 };
 const uploadPhoto = async () => {
+    loading.value = true
     const canvasElement = document.getElementById('photoTaken');
     const dataURL = canvasElement.toDataURL('image/jpeg');
     const blob = dataURLtoBlob(dataURL);
@@ -173,13 +173,14 @@ const uploadPhoto = async () => {
         const response = await axios.post(route('upload.voucher'), formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
-            }
-        }).then((result) => {
-            emit('updateData', result.data)
-            console.log('Image uploaded successfully:', result.data);
-        });
+            },
+        })
+        emit('updateData', response.data)
     } catch (error) {
         console.error('Error uploading image:', error);
+        loading.value = false
+    } finally {
+        loading.value = false
     }
 };
 onMounted(() => {

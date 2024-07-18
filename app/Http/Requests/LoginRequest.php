@@ -4,9 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-use function PHPSTORM_META\map;
-
-class UpdateUserRequest extends FormRequest
+class LoginRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,16 +22,13 @@ class UpdateUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required',
-            'username' => 'required',
+            'username' => 'required|string',
+            'password' => 'required|string',
         ];
     }
 
-    public function messages()
+    public function credentials()
     {
-        return [
-            'name.required' => 'User name is required.',
-            'username.required' => 'Username is required'
-        ];
+        return $this->only('username', 'password');
     }
 }

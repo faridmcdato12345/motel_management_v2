@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Motel;
+use App\Models\Role;
 use Illuminate\Validation\Rules;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role as SpatieRole;
 
 class AddMotelUserController extends Controller
 {
@@ -14,15 +16,18 @@ class AddMotelUserController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            'username' => 'required|string|lowercase|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'selectedRole' => 'required'
         ]);
         $user = User::create([
             'name' => $request->name,
-            'email' => $request->email,
+            'username' => $request->username,
             'password' => Hash::make($request->password),
         ]);
         $user->motels()->attach($motel->id);
+        $role = SpatieRole::findOrCreate($request->selectedRole);
+        $user->assignRole($role);
         return back();
     }
 }

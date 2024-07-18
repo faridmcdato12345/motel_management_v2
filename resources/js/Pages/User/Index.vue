@@ -19,8 +19,8 @@
                     <form @submit.prevent="storeMotelUser">
                         <InputLabel>Name:</InputLabel>
                         <TextInput type="text" class="mt-1 block w-full" required v-model="userFormData.name" />
-                        <InputLabel>Email Address:</InputLabel>
-                        <TextInput type="email" class="mt-1 block w-full" required v-model="userFormData.email" />
+                        <InputLabel>Username:</InputLabel>
+                        <TextInput type="text" class="mt-1 block w-full" required v-model="userFormData.username" />
                         <InputLabel>Password:</InputLabel>
                         <TextInput type="password" class="mt-1 block w-full" required v-model="userFormData.password" />
                         <InputLabel for="password_confirmation" value="Confirm Password" />
@@ -34,10 +34,10 @@
                                 }}</option>
                         </select>
                         <InputLabel>Role:</InputLabel>
-                        <select v-model="selectedRole"
+                        <select v-model="userFormData.selectedRole"
                             class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
                             <option value="" disabled>--Select a role --</option>
-                            <option v-for="role in props.roles" :key="role.id" :value="role.id">{{ role.name
+                            <option v-for="role in props.theRoles" :key="role.id" :value="role.name">{{ role.name
                                 }}</option>
                         </select>
                         <div class="flex justify-end">
@@ -59,8 +59,8 @@
                     <form @submit.prevent="handleUpdate">
                         <InputLabel>Name:</InputLabel>
                         <TextInput type="text" class="mt-1 block w-full" required v-model="userFormData.name" />
-                        <InputLabel>Email Address:</InputLabel>
-                        <TextInput type="email" class="mt-1 block w-full" required v-model="userFormData.email" />
+                        <InputLabel>Username:</InputLabel>
+                        <TextInput type="text" class="mt-1 block w-full" required v-model="userFormData.username" />
                         <InputLabel>Account for:</InputLabel>
                         <select v-model="selectedMotel"
                             class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
@@ -68,10 +68,11 @@
                             <option v-for="motel in props.motels" :key="motel.id" :value="motel.id">{{ motel.motel_name
                                 }}</option>
                         </select>
-                        <select v-model="selectedRole"
+                        <InputLabel>Role:</InputLabel>
+                        <select v-model="userFormData.selectedRole"
                             class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
                             <option value="">select a role...</option>
-                            <option v-for="role in props.roles" :key="role.id" :value="role.id">{{ role.name
+                            <option v-for="role in props.theRoles" :key="role.id" :value="role.name">{{ role.name
                                 }}</option>
                         </select>
                         <div class="flex justify-end">
@@ -124,14 +125,15 @@ const formFields = [
 
 const userFormData = useForm({
     name: '',
-    email: '',
+    username: '',
     password: '',
     password_confirmation: '',
+    selectedRole: '',
 })
 const columns = ref([
     { label: 'ID', key: 'id' },
     { label: 'NAME', key: 'name' },
-    { label: 'EMAIL', key: 'email' },
+    { label: 'USERNAME', key: 'username' },
     { label: 'ACCOUNT FOR THE MOTEL/HOTEL', key: 'motels.0.motel_name' },
     { label: 'CREATED AT', key: 'created_at' },
 ])
@@ -142,8 +144,10 @@ const props = defineProps({
     motels: {
         type: Object
     },
-    roles: Object,
-    queryLimit: Number
+    roles: Array,
+    permissions: Array,
+    queryLimit: Number,
+    theRoles: Object,
 })
 const storeMotelUser = async () => {
     const result = await storeItem(`add_motel_user/${selectedMotel.value}`, userFormData)
@@ -160,7 +164,8 @@ const storeMotelUser = async () => {
 const handleUpdate = async () => {
     const result = await updateItem(`users/${itemId.value}/${selectedMotel.value}`, {
         name: userFormData.name,
-        email: userFormData.email
+        username: userFormData.username,
+        selectedRole: userFormData.selectedRole
     })
     console.log("update result: ", result)
     if (result.success) {
@@ -178,11 +183,13 @@ const handleUpdate = async () => {
     }
 }
 const editData = async (id) => {
+
     itemId.value = id
     const result = await fetchItem(`users/${id}`)
     if (result.success) {
         userFormData.name = result.data.name
-        userFormData.email = result.data.email
+        userFormData.username = result.data.username
+        userFormData.selectedRole = result.data.roles[0].name
         selectedMotel.value = result.data.motels[0].id
         showModalEdit.value = true
     } else {
@@ -235,7 +242,7 @@ const deleteData = (id) => {
 
 }
 onMounted(() => {
-    console.log(props.users)
+    console.log(props.roles)
 })
 </script>
 

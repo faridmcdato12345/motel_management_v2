@@ -4,7 +4,8 @@
 
     <AuthenticatedLayout>
         <div class="pl-12 pr-4 py-4">
-            <PrimaryButton @click.prevent="showModal = true">Create</PrimaryButton>
+            <PrimaryButton @click.prevent="showModal = true" v-if="permissions.includes('create motel')">Create
+            </PrimaryButton>
             <DataTable :data="props.motels.data" :columns="columns" :pagination="props.motels" @limit-query="limitQuery"
                 @search-field-query="searchFieldQuery" @delete="deleteData" @edit="editData" @addUser="showModalAddUser"
                 :query-limit="props.queryLimit" :route-create="createRoute" :query-name="props.queryName" :action="true"
@@ -168,6 +169,8 @@ const props = defineProps({
     motels: {
         type: Object,
     },
+    roles: Array,
+    permissions: Array,
     queryLimit: Number
 })
 const showModalAddUser = (id) => {
@@ -275,7 +278,7 @@ const deleteData = (id) => {
 
 }
 onMounted(() => {
-    console.log(props.types)
+    console.log(props.roles)
 })
 </script>
 

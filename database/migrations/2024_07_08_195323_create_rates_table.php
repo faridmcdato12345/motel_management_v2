@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('rates', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->decimal('price_per_night', 8, 2);
             $table->enum('status',['Active','Inactive']);
             $table->timestamps();

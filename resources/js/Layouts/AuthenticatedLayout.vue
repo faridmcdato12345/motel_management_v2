@@ -7,8 +7,17 @@ import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { Link } from '@inertiajs/vue3';
 import SwitchButton from '@/Components/SwitchButton.vue';
+import { usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
 const showingNavigationDropdown = ref(false);
+
+const page = usePage()
+const auth = computed(() => page.props.auth);
+
+const hasPermission = (permission) => {
+    return auth.value.permissions && auth.value.permissions.includes(permission);
+};
 </script>
 
 <template>
@@ -29,8 +38,29 @@ const showingNavigationDropdown = ref(false);
 
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                                    Dashboard
+                                <NavLink :href="route('user.home')" :active="route().current('user.home')">
+                                    Home
+                                </NavLink>
+                                <NavLink v-if="hasPermission('show user')" :href="route('users.index')"
+                                    :active="route().current('users.index')">
+                                    Users
+                                </NavLink>
+                                <NavLink v-if="hasPermission('show motel')" :href="route('motel.index')"
+                                    :active="route().current('motel.index')">
+                                    Motel
+                                </NavLink>
+                                <NavLink :href="route('guest_type.index')"
+                                    :active="route().current('guest_type.index')">
+                                    Guest Age Group
+                                </NavLink>
+                                <NavLink :href="route('rates.index')" :active="route().current('rates.index')">
+                                    Rate
+                                </NavLink>
+                                <NavLink :href="route('room_type.index')" :active="route().current('room_type.index')">
+                                    Room Type
+                                </NavLink>
+                                <NavLink :href="route('rooms.index')" :active="route().current('rooms.index')">
+                                    Rooms
                                 </NavLink>
                             </div>
                         </div>
