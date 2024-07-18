@@ -1,5 +1,5 @@
 <template>
-    <div class="relative overflow-x-auto">
+    <div class="relative overflow-x-auto mt-4">
         <div class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4">
             <div>
                 <div :class="[$slots.export ? 'flex' : '']">
@@ -57,7 +57,7 @@
                         <td v-if="action" class="px-6 py-4 flex space-x-4">
                             <PrimaryButton v-if="addUser" @click="$emit('addUser', item.id)">Add User</PrimaryButton>
                             <PrimaryButton @click="$emit('edit', item.id)">Edit</PrimaryButton>
-                            <DangerButton @click="$emit('delete', item.id)">Delete</DangerButton>
+                            <DangerButton @click="$emit('delete', item.id)" v-if="deleteButton">Delete</DangerButton>
                         </td>
                         <td v-if="checkout" class="px-6 py-4 flex space-x-4">
                             <DangerButton @click="$emit('checkout', item.id)">Check Out</DangerButton>
@@ -126,6 +126,10 @@ const props = defineProps({
     checkout: {
         type: Boolean,
         default: false
+    },
+    deleteButton: {
+        type: Boolean,
+        default: true
     },
     placeholder: String
 })

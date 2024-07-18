@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('guest_types', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            $table->string('name')->unique();
+            $table->string('name');
             $table->enum('status',['Active','Inactive']);
             $table->timestamps();
         });

@@ -20,6 +20,7 @@ use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\RoomTypeController;
 use App\Http\Controllers\GuestTypeController;
 use App\Http\Controllers\AddMotelUserController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UploadVoucherController;
 use Spatie\Permission\Middlewares\PermissionMiddleware;
 
@@ -45,6 +46,8 @@ Route::middleware('auth')->group(function () {
         Route::resource('/users',UserController::class)->except('create','edit','show','update');
         Route::get('/users/{id}', [UserController::class,'show'])->name('users.show');
         Route::patch('/users/{user}/{motel}',[UserController::class,'update'])->name('users.update');
+        Route::get('/all/vouchers',[VoucherController::class,'all'])->name('all.vouchers');
+        Route::resource('/roles', RoleController::class);
     });
     Route::resource('/guest', GuestController::class)->except('create','edit');
 
@@ -62,6 +65,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/guest/store/multi_client',[GuestController::class,'storeBulk'])->name('guest.store.multi_client');
     Route::get('/guest_type/show',[GuestTypeController::class,'showAll'])->name('guest.show.all');
     Route::get('/user/home', [UserController::class,'home'])->name('user.home');
+    Route::post('/store/multi_client/voucher', [VoucherController::class,'storeMultiClient'])->name('store.multi.client');
 });
 Route::get('/test',function() {
     $user = User::findOrFail(1);

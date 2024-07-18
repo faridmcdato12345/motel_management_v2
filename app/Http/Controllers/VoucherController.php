@@ -1,10 +1,16 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use App\Http\Requests\StoreVoucherRequest;
+use DateTime;
+use App\Models\Room;
+use App\Models\Guest;
+use App\Models\Booking;
 use App\Models\Voucher;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Http\Requests\StoreVoucherRequest;
+use App\Http\Resources\VoucherResource;
+use App\Models\Motel;
 
 class VoucherController extends Controller
 {
@@ -78,4 +84,64 @@ class VoucherController extends Controller
     {
         //
     }
+
+    public function all(Request $request)
+    {
+        try {
+            return inertia('Voucher/All',[
+                'vouchers' => VoucherResource::collection(Voucher::with('motels','guests')->get())
+            ]);
+        } catch (\Exception $e) {
+            return response()->json($e->getMessage());
+        }
+    }
+    public function storeMultiClient(Request $request)
+    {
+        // dd($request->motel_name);
+        $motelId = Motel::select('id','motel_name')->where('motel_name','LIKE','%'.$request->motel_name.'%')->first();
+        //dd($motelId->id);
+        try {
+            DB::beginTransaction();
+            if(count($request->clients) == 1){
+                $nameParts = explode(' ',$request->clients[0]);
+                $checkInDateString = $request->dates[0];
+                $checkOutDateString = $request->dates[1];
+                $checkInDate = DateTime::createFromFormat('m/d/y',$checkInDateString);
+                $checkOutDate = DateTime::createFromFormat('m/d/y',$checkOutDateString);
+                $guest = Guest::create([
+                    'user_id' => auth()->user()->id,
+                    'type_id' => $request->type[0],
+                    'first_name' => $nameParts[0],
+                    'last_name' => $nameParts[1]
+                ]);
+                Voucher::create([
+                    'user_id' => auth()->user()->id,
+                    'guest_id' => $guest->id,
+                    'case_number' => $request->case_number[0],
+                    'days' => $request->days,
+                    'amount' => $request->total,
+                    'self_pay' => $request->contribution,
+                    'path' => $request->image_path,
+                    'motel_id' => $motelId->id
+                ]);
+                Booking::create([
+                    'room_id' => $request->room_number,
+                    'guest_id' => $guest->id,
+                    'check_in_date' => $checkInDate->format('Y-m-d'),
+                    'check_out_date' => $checkOutDate->format('Y-m-d'),
+                    'total_price' => $request->total_amount,
+                    'status' => 'checked_in'
+                ]);
+                Room::where('user_id',auth()->user()->id)->where('room_number',$request->room_number)->update(['is_occupied' => 1]);
+            }
+            DB::commit();
+            return redirect()->back();
+        } catch (\Throwable $th) {
+            DB::rollback();
+            return response()->json($th->getMessage());
+        }
+        
+        
+    }
+
 }

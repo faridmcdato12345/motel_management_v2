@@ -90,7 +90,6 @@ class GuestController extends Controller
 
     public function storeBulk(Request $request)
     {
-        
         try {
             DB::beginTransaction();
             foreach ($request->all() as $payload) {

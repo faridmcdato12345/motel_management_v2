@@ -49,6 +49,14 @@ const hasPermission = (permission) => {
                                     :active="route().current('motel.index')">
                                     Motel
                                 </NavLink>
+                                <NavLink v-if="hasPermission('show motel')" :href="route('roles.index')"
+                                    :active="route().current('roles.index')">
+                                    Roles
+                                </NavLink>
+                                <NavLink v-if="hasPermission('show motel')" :href="route('all.vouchers')"
+                                    :active="route().current('all.vouchers')">
+                                    Vouchers
+                                </NavLink>
                                 <NavLink :href="route('guest_type.index')"
                                     :active="route().current('guest_type.index')">
                                     Guest Age Group

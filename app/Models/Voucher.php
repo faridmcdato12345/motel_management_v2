@@ -17,7 +17,8 @@ class Voucher extends Model
         'days',
         'amount',
         'self_pay',
-        'path'
+        'path',
+        'motel_id'
     ];
     public function users(): BelongsTo
     {
@@ -27,5 +28,10 @@ class Voucher extends Model
     public function guests(): BelongsTo
     {
         return $this->belongsTo(Guest::class, 'guest_id', 'id', 'guests');
+    }
+
+    public function motels(): BelongsTo
+    {
+        return $this->belongsTo(Motel::class,'motel_id','id','motels');
     }
 }

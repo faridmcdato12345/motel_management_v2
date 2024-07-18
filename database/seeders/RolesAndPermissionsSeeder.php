@@ -7,6 +7,8 @@ use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
+use function PHPSTORM_META\map;
+
 class RolesAndPermissionsSeeder extends Seeder
 {
     /**
@@ -59,9 +61,26 @@ class RolesAndPermissionsSeeder extends Seeder
         Permission::create(['name' => 'delete motel admin user']);
         Permission::create(['name' => 'show motel admin user']);
 
+        Permission::create(['name' => 'show all vouchers']);
+        Permission::create(['name' => 'download vouchers']);
+
         // Create roles and assign permissions
         $adminRole = Role::create(['name' => 'Super Admin']);
-        $adminRole->givePermissionTo(Permission::all());
+        $adminRole->givePermissionTo([
+            'show motel',
+            'create motel',
+            'edit motel',
+            'delete motel',
+            'create user',
+            'edit user',
+            'delete user',
+            'create motel admin user',
+            'edit mote admin user',
+            'delete motel admin user',
+            'show motel admin user',
+            'show all vouchers',
+            'download vouchers'
+        ]);
 
         $motelAdmin = Role::create(['name' => 'Motel Admin']);
         $motelAdmin->givePermissionTo([

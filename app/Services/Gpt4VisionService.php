@@ -132,7 +132,7 @@ class Gpt4VisionService
                     'motel_name' => $data['motel_name'] ?? '',
                     'cents' => ($response->usage->promptTokens * 3 / 1000) + ($response->usage->completionTokens * 6 / 1000),
                     'days' => $this->days->numberOfDays($data['dates']),
-                    'type' => '',
+                    'type' => [],
                     'room_number' => '',
                     'room_type' => '',
                     'image_path' => $fullPath

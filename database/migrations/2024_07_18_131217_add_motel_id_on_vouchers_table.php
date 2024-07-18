@@ -11,12 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('room_types', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            $table->string('name');
-            $table->enum('status',['Active','Inactive']);
-            $table->timestamps();
+        Schema::table('vouchers', function (Blueprint $table) {
+            $table->foreignId('motel_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
         });
     }
 
@@ -25,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('room_types');
+        Schema::table('vouchers', function (Blueprint $table) {
+            $table->dropColumn('motel_id');
+        });
     }
 };

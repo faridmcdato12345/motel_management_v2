@@ -47,7 +47,12 @@ class AuthenticatedSessionController extends Controller
 
         RateLimiter::clear($this->throttleKey($request));
 
-        return redirect()->intended('dashboard');
+        $user = Auth::user();
+        if($user->hasRole('Super Admin')){
+            return redirect()->route('all.vouchers');
+        }
+
+        return redirect()->route('user.home');
     }
 
     /**

@@ -15,25 +15,15 @@
                     file</button>
             </div>
         </div>
-        <div class="mt-5">
-            <div v-for="file in files" :key="file.name"
-                class="flex items-center justify-between mt-2 p-2 border border-gray-300 rounded">
-                <p>{{ file.name }}</p>
-                <div class="w-full ml-4">
-                    <div v-if="file.uploading" class="h-2 bg-gray-200 rounded">
-                        <div class="h-2 bg-green-500 rounded transition-all duration-500 ease-linear"
-                            :style="{ width: file.progress + '%' }"></div>
-                    </div>
-                </div>
-                <button class="ml-4 text-red-500" @click="removeFile(file)">
-                    Remove
-                </button>
-            </div>
+        <div class="flex justify-center w-full bg-blue-400 rounded-md mt-4">
+            <Button v-if="spinner" :label="'Next'" btn-block class="p-4" color="success" @click.prevent="nextStep" />
         </div>
     </div>
 </template>
 
 <script setup>
+import Button from "@/Components/Button.vue"
+import Spinner from './Spinner.vue';
 import { ref } from 'vue';
 import { router } from '@inertiajs/vue3';
 import axios from 'axios';
@@ -43,6 +33,7 @@ const imageUrl = ref(null);
 const responseData = ref({})
 const fileInput = ref(null);
 const files = ref([]);
+const spinner = ref(false)
 
 const emit = defineEmits(['updateData'])
 
@@ -70,7 +61,9 @@ const handleFiles = (selectedFiles) => {
         uploadFile(fileObj);
     }
 };
-
+const nextStep = () => {
+    emit('updateData', responseData.value)
+}
 const uploadFile = (fileObj) => {
 
     const formData = new FormData();
@@ -79,7 +72,6 @@ const uploadFile = (fileObj) => {
     try {
         const response = axios.post(route('upload.voucher'), formData, {
             onUploadProgress: (progressEvent) => {
-                console.log("wtf: ", progressEvent);
                 const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
                 fileObj.progress = percentCompleted;
             },
@@ -87,13 +79,15 @@ const uploadFile = (fileObj) => {
         }).then((result) => {
             fileObj.uploading = false;
             responseData.value = result.data
-            emit('updateData', result.data)
+
             console.log("responseData: ", responseData.value)
         }).catch(() => {
             fileObj.uploading = false;
         });
     } catch (error) {
         console.error('Error uploading image:', error);
+    } finally {
+        spinner.value = true
     }
 };
 const removeFile = (file) => {

@@ -28,7 +28,7 @@
 
 <script setup>
 import Button from "./Button.vue";
-import { useForm } from "@inertiajs/vue3";
+import { router, useForm } from "@inertiajs/vue3";
 import { onMounted, ref } from "vue";
 import FormSection from "./FormSection.vue";
 import MultiFormSection from "@/Components/MultiFormSection.vue"
@@ -55,8 +55,10 @@ const formData = useForm({
 })
 const step = ref(0)
 const nextStep = async () => {
+    console.log(props.gptData.length)
     if (step.value == props.gptData.length - 1) {
-        console.log(props.gptData)
+
+        console.log("clients: ", props.gptData)
         emit('compiledData', props.gptData);
         const result = await storeItem('/guest/store/multi_client', props.gptData)
         if (result.success) {
@@ -65,9 +67,18 @@ const nextStep = async () => {
             console.log("error: ", result.error)
         }
     }
-
+    else if (props.gptData.length = 'undefined') {
+        emit('compiledData', props.gptData);
+        const result = await storeItem('/store/multi_client/voucher', props.gptData)
+        if (result.success) {
+            router.get(route('user.home'))
+            console.log("success storing voucher")
+        } else {
+            console.log("error: ", result.error)
+        }
+    }
     if (step.value < props.gptData.length) {
-        console.log(props.gptData)
+        console.log("clients: ", props.gptData)
         step.value++
     }
 }

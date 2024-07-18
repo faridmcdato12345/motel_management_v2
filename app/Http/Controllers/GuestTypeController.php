@@ -14,13 +14,12 @@ class GuestTypeController extends Controller
      */
     public function index(Request $request)
     {
-        
         $query = GuestType::query();
         if($request->has('name')){
             $query->where('name','like','%' . $request->query('name') . '%');
         }
         $limit = $request->has('query') ? $request->query('query'): 5;
-        $types = $query->paginate(intval($limit))->withQueryString();
+        $types = $query->where('user_id',auth()->user()->id)->paginate(intval($limit))->withQueryString();
         return inertia('Guest/Type/Index',[
             'queryLimit' => intval($limit),
             'queryName' => $request->has('name') ? $request->query('name') : null,

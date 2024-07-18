@@ -18,8 +18,7 @@ class RateController extends Controller
             $query->where('name','like','%' . $request->query('name') . '%');
         }
         $limit = $request->has('query') ? $request->query('query'): 5;
-        $rates = $query->with('rooms','users')->paginate(intval($limit))->withQueryString();
-        //return $rates;
+        $rates = $query->with('rooms','users')->where('user_id',auth()->user()->id)->paginate(intval($limit))->withQueryString();
         return inertia('Rate/Index',[
             'queryLimit' => intval($limit),
             'queryName' => $request->has('name') ? $request->query('name') : null,
