@@ -3,25 +3,14 @@
     <Head title="Scan" />
     <AuthenticatedLayout>
         <Transition appear>
-            <div class="flex items-center justify-center h-screen">
+            <div class="flex items-center justify-center content-area">
                 <div>
-                    <div class="h-screen" v-if="roomNumbers.length">
-                        <Scan v-if="step == 1" @update-data="getOpenAiResponse" />
-                        <GuestDetail v-if="step == 2" :gptData="openAiData" @update:gptData="getUpdatedData"
-                            :guest-types="guestTypes" :room-numbers="roomNumbers" />
-                    </div>
-                    <div class="flex justify-between mt-4 space-x-4" v-else>
-                        <div class="flex justify-center w-full bg-red-800 rounded-md">
-                            <button class="text-white p-4 font-black text-lg">NO ROOM AVAILABLE</button>
-                        </div>
-                    </div>
+                    <Scan v-if="step == 1" @update-data="getOpenAiResponse" />
+                    <GuestDetail v-if="step == 2" :gptData="openAiData" @update:gptData="getUpdatedData"
+                        :guest-types="guestTypes" />
                 </div>
             </div>
-
         </Transition>
-        <div>
-            <NavBottom />
-        </div>
     </AuthenticatedLayout>
 </template>
 
@@ -36,7 +25,7 @@ import { ref, onMounted } from 'vue';
 
 const props = defineProps({
     guestTypes: Object,
-    roomNumbers: Object
+    room: Object
 })
 const openAiData = ref({})
 const getOpenAiResponse = (result) => {
@@ -54,4 +43,8 @@ onMounted(() => {
 })
 </script>
 
-<style lang="scss" scoped></style>
+<style scoped>
+.content-area {
+    height: calc(100vh - 80px);
+}
+</style>

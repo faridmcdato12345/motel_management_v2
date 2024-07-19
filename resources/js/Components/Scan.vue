@@ -1,7 +1,6 @@
 <template>
     <div class="flex items-center justify-center">
         <div>
-            <!-- <FileUpload @update-data="getOpenAiResponse" /> -->
             <div v-show="isCameraOpen && isLoading" class="camera-loading">
                 <ul class="loader-circle">
                     <li></li>
@@ -17,8 +16,10 @@
                 <canvas v-show="isPhotoTaken" id="photoTaken" ref="canvas" width="328" height="437"></canvas>
             </div>
             <div class="flex justify-center mt-4 space-x-2 bg-gray-300 rounded-lg" v-if="isCameraOpen">
-                <button class="px-4 py-2 text-gray-600">Id Card</button>
-                <button class="px-4 py-2 text-blue-500">Voucher</button>
+                <button class="px-4 py-2" :class="scanType === 'voucher' ? 'text-blue-600' : 'text-gray-600'"
+                    @click.prevent="scanType = 'voucher'">Voucher</button>
+                <button class="px-4 py-2" :class="scanType === 'id' ? 'text-blue-600' : 'text-gray-600'"
+                    @click.prevent="scanType = 'id'">Id Card</button>
             </div>
             <div v-if="isCameraOpen && !isLoading"
                 class="camera-shoot flex items-center justify-center mt-4 space-x-4 bg-blue-400 py-5 rounded-full">
@@ -30,9 +31,9 @@
                 </div>
                 <div v-if="!loading">
                     <button class="bg-blue-500 text-white px-4 py-2 rounded" v-if="done"
-                        @click.prevent="doneAction">Done</button>
+                        @click.prevent="uploadPhoto">Done</button>
                     <button class="bg-blue-500 text-white px-4 py-2 rounded" v-else
-                        @click.prevent="uploadPhoto">Next</button>
+                        @click.prevent="nextStep">Next</button>
                 </div>
                 <div v-else>
                     <Spinner />
@@ -40,21 +41,22 @@
             </div>
         </div>
     </div>
-
 </template>
 
 <script setup>
+
 import Spinner from './Spinner.vue';
 import FileUpload from './FileUpload.vue';
 import { onMounted, ref } from 'vue';
 
-
 const isCameraOpen = ref(false);
 const isPhotoTaken = ref(false);
 const isShotPhoto = ref(false);
+const responseData = ref({})
 const isLoading = ref(false);
 const done = ref(true)
 const loading = ref(false)
+const scanType = ref('voucher')
 const doneTakePhoto = ref(false)
 
 const camera = ref(null);
@@ -146,10 +148,8 @@ const takePhoto = () => {
     context.drawImage(camera.value, 0, 0, canvas.value.width, canvas.value.height);
     doneTakePhoto.value = true
 };
-const doneAction = () => {
-    if (doneTakePhoto.value == true) {
-        done.value = false
-    }
+const nextStep = () => {
+    emit('updateData', responseData.value)
 }
 const dataURLtoBlob = (dataURL) => {
     const arr = dataURL.split(',');
@@ -174,9 +174,17 @@ const uploadPhoto = async () => {
             headers: {
                 'Content-Type': 'multipart/form-data'
             },
-        })
-        emit('updateData', response.data)
+        }).then((result) => {
+            loading.value = false
+            responseData.value = result.data
+
+        }).catch(() => {
+            loading.value = false
+            fileObj.uploading = false;
+        });
+
     } catch (error) {
+        console.log("wtf sca")
         console.error('Error uploading image:', error);
         loading.value = false
     } finally {

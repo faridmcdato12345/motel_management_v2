@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Role;
+use App\Models\Room;
 use App\Models\User;
 use App\Models\Motel;
 use App\Models\Voucher;
@@ -64,11 +65,13 @@ class UserController extends Controller
         return back();
     }
 
-    public function home()
+    public function home(Request $request)
     {
-        $vouchers = Voucher::with('guests.types','guests.bookings')->where('user_id',auth()->user()->id)->get();
+        
         return inertia('User/Home',[
-            'vouchers' => $vouchers
+            'roles' => auth()->user()->getRoleNames(),
+            'permissions' => auth()->user()->getAllPermissions()->pluck('name'),
+            'rooms' => Room::all(),
         ]);
     }
 }

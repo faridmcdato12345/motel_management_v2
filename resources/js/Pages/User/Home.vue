@@ -3,40 +3,54 @@
     <Head title="Motel" />
 
     <AuthenticatedLayout>
-        <div class="pl-12 pr-4 py-4">
-            <DataTable :data="props.vouchers" :columns="columns" :pagination="props.vouchers" @limit-query="limitQuery"
-                @search-field-query="searchFieldQuery" @delete="deleteData" @edit="editData" @checkout="checkout"
-                :query-limit="props.queryLimit" :route-create="createRoute" :query-name="props.queryName"
-                :action="false" :checkout="true" />
+        <div class="md:pl-12 md:pr-4 py-4 content-area">
+            <div v-if="next" class="flex flex-col space-y-4 items-center justify-center w-full">
+                <Link :href="route('scan.index', motelId)">
+                <PrimaryButton :motel-id="motelId">Scan Voucher</PrimaryButton>
+                </Link>
+                <Link :href="route('upload.voucher.index', motelId)">
+                <PrimaryButton :motel-id="motelId">Upload Voucher</PrimaryButton>
+                </Link>
+            </div>
+            <div v-else>
+                <RoomDatatable :data="props.rooms" :columns="columns" :pagination="props.rooms"
+                    @limit-query="limitQuery" @search-field-query="searchFieldQuery" @delete="deleteData"
+                    @edit="editData" @checkout="checkout" :query-limit="props.queryLimit" :route-create="createRoute"
+                    :query-name="props.queryName" :action="false" :checkout="false" @check-in="checkIn" />
+            </div>
         </div>
-        <div>
+        <!-- <div>
             <NavBottom />
-        </div>
+        </div> -->
     </AuthenticatedLayout>
 </template>
 
 <script setup>
+import PrimaryButton from "@/Components/PrimaryButton.vue";
 import NavBottom from "@/Components/NavBottom.vue"
-import DataTable from "@/Components/DataTable.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { ref, onMounted } from "vue"
-import { router, Head, useForm, usePage } from "@inertiajs/vue3";
+import { router, Head, useForm, usePage, Link } from "@inertiajs/vue3";
+import RoomDatatable from "@/Components/RoomDatatable.vue";
 
+const motelId = ref('')
+const next = ref(false)
 const columns = ref([
-    { label: 'CASE #', key: 'case_number' },
-    { label: 'GUEST FIRST NAME', key: 'guests.first_name' },
-    { label: 'GUEST LAST NAME', key: 'guests.last_name' },
-    { label: 'AGE GROUP', key: 'guests.types.name' },
-    { label: 'CHECK IN DATE', key: 'guests.bookings.check_in_date' },
-    { label: 'STATUS', key: 'guests.bookings.status' },
+    { label: 'ROOM #', key: 'room_number' },
+    { label: 'STATUS', key: 'status' },
 ])
 const props = defineProps({
-    vouchers: {
+    rooms: {
         type: Object,
     },
 })
 const checkout = () => {
     console.log("checkout")
+}
+const checkIn = (id) => {
+    console.log("check in home: ", id)
+    next.value = true
+    motelId.value = id
 }
 const limitQuery = (name, e) => {
     let qParams = {}
@@ -82,8 +96,8 @@ const deleteData = (id) => {
     }
 }
 onMounted(() => {
-    console.log(props.vouchers)
+    console.log(props.rooms)
 })
 </script>
 
-<style lang="scss" scoped></style>
+<style scoped></style>

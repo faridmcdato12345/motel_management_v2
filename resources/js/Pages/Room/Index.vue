@@ -127,7 +127,7 @@ const columns = ref([
     { label: 'ROOM NUMBER', key: 'room_number' },
     { label: 'ROOM TYPE', key: 'types.name' },
     { label: 'RATE', key: 'rates.price_per_night' },
-    { label: 'STATUS', key: 'is_occupied' },
+    { label: 'STATUS', key: 'status' },
 ])
 const props = defineProps({
     rooms: {

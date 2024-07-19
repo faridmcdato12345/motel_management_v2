@@ -3,23 +3,19 @@
     <Head title="Scan" />
     <AuthenticatedLayout>
         <Transition appear>
-            <div class="flex flex-col w-full items-center justify-center">
+            <div class="flex flex-col w-full items-center justify-center content-area">
                 <div class="w-full flex-col space-y-4">
-                    <!-- <div class="flex justify-center w-full bg-blue-400  rounded-md">
-                        <Link :href="route('upload.voucher.home')">
-                        <button class="text-white p-4 font-black text-lg">VOUCHER</button>
-                        </Link>
+                    <div class="space-y-2">
+                        <FileUpload @update-data="getOpenAiResponse" v-if="step == 1" />
+                        <GuestDetail v-if="step == 2" :gptData="openAiData" @update:gptData="getUpdatedData"
+                            :guest-types="guestTypes" :room-numbers="roomNumbers" />
                     </div>
-                    <div class="flex justify-center w-full bg-blue-400  rounded-md">
-                        <button class="text-white p-4 font-black text-lg">ID</button>
-                    </div> -->
-                    <FileUpload @update-data="getOpenAiResponse" v-if="step == 1" />
-                    <!-- <Scan v-if="step == 1" @open-ai-response="getOpenAiResponse" /> -->
-                    <GuestDetail v-if="step == 2" :gptData="openAiData" @update:gptData="getUpdatedData"
-                        :guest-types="guestTypes" :room="room" />
                 </div>
             </div>
         </Transition>
+        <div>
+            <NavBottom />
+        </div>
     </AuthenticatedLayout>
 </template>
 
@@ -35,12 +31,8 @@ import { Link, Head } from "@inertiajs/vue3";
 import { useStartCamera } from "@/Composables/useStartCamera";
 
 
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted } from 'vue';
 
-const props = defineProps({
-    guestTypes: Object,
-    room: Object
-})
 const openAiData = ref({})
 const getOpenAiResponse = (result) => {
     console.log("getOpenAiResponse: ", result)

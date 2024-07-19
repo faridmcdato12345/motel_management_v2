@@ -137,8 +137,38 @@ const hasPermission = (permission) => {
                 <div :class="{ block: showingNavigationDropdown, hidden: !showingNavigationDropdown }"
                     class="sm:hidden">
                     <div class="pt-2 pb-3 space-y-1">
-                        <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                            Dashboard
+                        <ResponsiveNavLink :href="route('user.home')" :active="route().current('user.home')">
+                            Home
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink v-if="hasPermission('show user')" :href="route('users.index')"
+                            :active="route().current('users.index')">
+                            Users
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink v-if="hasPermission('show motel')" :href="route('motel.index')"
+                            :active="route().current('motel.index')">
+                            Motel
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink v-if="hasPermission('show motel')" :href="route('roles.index')"
+                            :active="route().current('roles.index')">
+                            Roles
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink v-if="hasPermission('show motel')" :href="route('all.vouchers')"
+                            :active="route().current('all.vouchers')">
+                            Vouchers
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink :href="route('guest_type.index')"
+                            :active="route().current('guest_type.index')">
+                            Guest Age Group
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink :href="route('rates.index')" :active="route().current('rates.index')">
+                            Rate
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink :href="route('room_type.index')"
+                            :active="route().current('room_type.index')">
+                            Room Type
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink :href="route('rooms.index')" :active="route().current('rooms.index')">
+                            Rooms
                         </ResponsiveNavLink>
                     </div>
 

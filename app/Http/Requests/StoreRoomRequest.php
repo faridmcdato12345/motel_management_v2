@@ -29,6 +29,7 @@ class StoreRoomRequest extends FormRequest
             'room_type_id'=> 'required',
             'motel_id' => 'nullable',
             'is_occupied' => 'nullable',
+            'status' => 'nullable'
         ];
     }
 

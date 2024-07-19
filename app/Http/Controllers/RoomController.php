@@ -76,10 +76,10 @@ class RoomController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(StoreRoomRequest $request, Room $room)
+    public function update(Request $request, Room $room)
     {
         try {
-            $room->update($request->validated());
+            $room->update($request->all());
             return back();
         } catch (\Exception $e) {
             return response()->json($e->getMessage());

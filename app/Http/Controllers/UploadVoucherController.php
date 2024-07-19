@@ -21,11 +21,11 @@ class UploadVoucherController extends Controller
         $this->imgurService = $imgur;
     }
 
-    public function index()
+    public function index(Room $room)
     {
         return inertia('Upload/Index',[
             'guestTypes' => GuestType::where('user_id',auth()->user()->id)->get(),
-            'roomNumbers' => Room::where('user_id',auth()->user()->id)->where('is_occupied',0)->get()
+            'room' => $room
         ]);
     }
 
@@ -47,9 +47,6 @@ class UploadVoucherController extends Controller
             } catch (\Throwable $th) {
                 return response()->json(["message error" => $th->getMessage()]);
             }
-           
-            // return response()->json($result);
-            //return response()->json(['imageUrl' => asset("storage/{$path}")]);
         }
 
         return response()->json(['error' => 'Image upload failed'], 400);

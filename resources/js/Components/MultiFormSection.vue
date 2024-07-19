@@ -11,13 +11,13 @@
                 <option :value="type.id" v-for="type in guestTypes" :key="type.id">{{ type.name }}</option>
             </select>
         </div>
-        <div>
+        <!-- <div>
             <InputLabel>Room Number:</InputLabel>
             <select name="" id="" v-model="localFormData.room_number" class="mt-1 block w-full">
                 <option value="">-- Select room --</option>
                 <option :value="room.id" v-for="room in roomNumbers" :key="room.id">{{ room.room_number }}</option>
             </select>
-        </div>
+        </div> -->
         <div>
             <InputLabel>Case Number:</InputLabel>
             <TextInput type="text" class="mt-1 block w-full" required v-model="localFormData.case_number" />
@@ -47,7 +47,6 @@ const props = defineProps({
     isMultiClient: Boolean,
     guestTypes: Object,
     clients: Array,
-    roomNumbers: Object,
     modelValue: Object
 });
 const emit = defineEmits(['update:modelValue', 'compiledData']);

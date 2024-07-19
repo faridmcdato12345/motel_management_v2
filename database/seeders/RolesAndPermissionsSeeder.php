@@ -73,6 +73,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'delete motel',
             'create user',
             'edit user',
+            'show user',
             'delete user',
             'create motel admin user',
             'edit motel admin user',

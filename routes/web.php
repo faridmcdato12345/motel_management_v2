@@ -21,6 +21,7 @@ use App\Http\Controllers\RoomTypeController;
 use App\Http\Controllers\GuestTypeController;
 use App\Http\Controllers\AddMotelUserController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\UploadController;
 use App\Http\Controllers\UploadVoucherController;
 use Spatie\Permission\Middlewares\PermissionMiddleware;
 
@@ -57,15 +58,16 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/home',[HomeController::class,'index'])->name('home.index');
 
-    Route::get('/scan/voucher', [ScanController::class,'index'])->name('scan.index');
+    Route::get('/scan/voucher/{room}', [ScanController::class,'index'])->name('scan.index');
 
-    Route::get('/upload/voucher',[UploadVoucherController::class,'index'])->name('upload.voucher.index');
+    Route::get('/upload/voucher/{room}',[UploadVoucherController::class,'index'])->name('upload.voucher.index');
 
     Route::post('/upload/voucher',[UploadVoucherController::class,'store'])->name('upload.voucher');
     Route::post('/guest/store/multi_client',[GuestController::class,'storeBulk'])->name('guest.store.multi_client');
     Route::get('/guest_type/show',[GuestTypeController::class,'showAll'])->name('guest.show.all');
     Route::get('/user/home', [UserController::class,'home'])->name('user.home');
-    Route::post('/store/multi_client/voucher', [VoucherController::class,'storeMultiClient'])->name('store.multi.client');
+    Route::post('/store/multi_client/voucher/{room}', [VoucherController::class,'storeMultiClient'])->name('store.multi.client');
+    Route::get('/upload/voucher/home',[UploadController::class,'voucherIndex'])->name('upload.voucher.home');
 });
 Route::get('/test',function() {
     $user = User::findOrFail(1);

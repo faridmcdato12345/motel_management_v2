@@ -5,13 +5,12 @@
                 <MultiFormSection :modelValue="formSection" v-if="step === index"
                     @update:modelValue="value => updateFormSection(value, index)"
                     :is-multi-client="isMultiClient = false" @compiledData="handleCompiledData"
-                    :guest-types="guestTypes" :room-numbers="roomNumbers" />
+                    :guest-types="guestTypes" />
             </div>
         </div>
         <div class="form" v-else>
             <FormSection :modelValue="gptData" :is-multi-client="isMultiClient" :clients="props.gptData.clients"
-                @update:modelValue="value => updateFormSection(value)" :guest-types="guestTypes"
-                :room-numbers="roomNumbers" />
+                @update:modelValue="value => updateFormSection(value)" :guest-types="guestTypes" />
         </div>
         <div class="flex justify-between mt-4 space-x-4">
             <div v-if="step > 0" class="flex justify-center w-full bg-red-800 rounded-md">
@@ -40,7 +39,8 @@ const { storeItem, fetchItem } = useData()
 const props = defineProps({
     gptData: Object,
     guestTypes: Object,
-    roomNumbers: Object
+    roomNumbers: Object,
+    room: Object
 })
 const isMultiClient = ref(false)
 const isMultiForm = ref(false)
@@ -55,7 +55,7 @@ const formData = useForm({
 })
 const step = ref(0)
 const nextStep = async () => {
-    console.log(props.gptData.length)
+    console.log("guest detail: ", props.gptData.length)
     if (step.value == props.gptData.length - 1) {
 
         console.log("clients: ", props.gptData)
@@ -69,7 +69,7 @@ const nextStep = async () => {
     }
     else if (props.gptData.length = 'undefined') {
         emit('compiledData', props.gptData);
-        const result = await storeItem('/store/multi_client/voucher', props.gptData)
+        const result = await storeItem(`/store/multi_client/voucher/${props.room.id}`, props.gptData)
         if (result.success) {
             router.get(route('user.home'))
             console.log("success storing voucher")

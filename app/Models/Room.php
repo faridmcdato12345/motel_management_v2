@@ -15,7 +15,8 @@ class Room extends Model
         'room_number',
         'room_type_id',
         'is_occupied',
-        'user_id'
+        'user_id',
+        'status'
     ];
 
     protected $with = ['users','types'];

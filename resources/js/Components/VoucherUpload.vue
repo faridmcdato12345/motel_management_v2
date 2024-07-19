@@ -5,7 +5,8 @@
             <div>
                 <input type="file" ref="fileInput" @change="handleFileSelect" hidden multiple />
                 <div class="flex flex-col items-center">
-                    <p>Upload file</p>
+                    <p>Drag and drop file here</p>
+                    <p>or</p>
                 </div>
                 <button class="bg-blue-500 text-white py-2 px-4 rounded w-full" @click="browseFiles">Browse for
                     file</button>
@@ -13,7 +14,7 @@
         </div>
         <div class="flex justify-center w-full bg-blue-400 rounded-md mt-4">
             <Spinner v-if="spinner" class="p-4" />
-            <Button v-if="nextButton" :label="'Next'" btn-block class="p-4" color="success" @click.prevent="nextStep" />
+            <Button v-else :label="'Next'" btn-block class="p-4" color="success" @click.prevent="nextStep" />
         </div>
     </div>
 </template>
@@ -31,7 +32,6 @@ const responseData = ref({})
 const fileInput = ref(null);
 const files = ref([]);
 const spinner = ref(false)
-const nextButton = ref(false)
 
 const emit = defineEmits(['updateData'])
 
@@ -78,7 +78,6 @@ const uploadFile = (fileObj) => {
             fileObj.uploading = false;
             responseData.value = result.data
             spinner.value = false
-            nextButton.value = true
             console.log("responseData: ", responseData.value)
         }).catch(() => {
             fileObj.uploading = false;

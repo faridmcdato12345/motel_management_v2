@@ -8,11 +8,11 @@ use Illuminate\Http\Request;
 
 class ScanController extends Controller
 {
-    public function index()
+    public function index(Room $room)
     {
         return inertia('Scan/Index',[
             'guestTypes' => GuestType::where('user_id',auth()->user()->id)->get(),
-            'roomNumbers' => Room::where('user_id',auth()->user()->id)->where('is_occupied',0)->get()
+            'room' => $room
         ]);
     }
 }

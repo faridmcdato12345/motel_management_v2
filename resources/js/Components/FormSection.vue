@@ -17,7 +17,7 @@
                 </select>
             </div>
         </div>
-        <hr class="mt-4 mb-4">
+        <!-- <hr class="mt-4 mb-4">
         <div>
             <InputLabel>Room Number:</InputLabel>
             <select v-if="roomNumbers.length" v-model="localFormData.room_number" class="mt-1 block w-full">
@@ -25,7 +25,7 @@
                 <option :value="room.id" v-for="room in roomNumbers" :key="room.id">{{ room.room_number }}</option>
             </select>
             <div v-else class="border-red-400 border-2 p-4 rounded-md">No Room Available</div>
-        </div>
+        </div> -->
         <hr class="mt-4 mb-4">
         <div>
             <InputLabel>Case Number:</InputLabel>
@@ -59,7 +59,7 @@ const props = defineProps({
     isMultiClient: Boolean,
     modelValue: Object,
     guestTypes: Object,
-    roomNumbers: Object,
+    // roomNumbers: Object,
 })
 
 const emit = defineEmits(['update:modelValue']);
