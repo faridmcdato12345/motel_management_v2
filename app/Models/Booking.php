@@ -28,7 +28,7 @@ class Booking extends Model
 
     public function guests(): BelongsTo
     {
-        return $this->belongsTo(Guest::class);
+        return $this->belongsTo(Guest::class,'guest_id','id','guests');
     }
 
     public function payments(): HasMany

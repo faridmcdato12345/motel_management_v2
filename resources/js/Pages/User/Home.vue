@@ -3,7 +3,7 @@
     <Head title="Motel" />
 
     <AuthenticatedLayout>
-        <div class="md:pl-12 md:pr-4 py-4 content-area">
+        <div class="md:pl-12 md:pr-4 content-area">
             <div v-if="next" class="flex flex-col space-y-4 items-center justify-center w-full">
                 <Link :href="route('scan.index', motelId)">
                 <PrimaryButton :motel-id="motelId">Scan Voucher</PrimaryButton>
@@ -37,7 +37,6 @@ const motelId = ref('')
 const next = ref(false)
 const columns = ref([
     { label: 'ROOM #', key: 'room_number' },
-    { label: 'STATUS', key: 'status' },
 ])
 const props = defineProps({
     rooms: {
@@ -48,7 +47,6 @@ const checkout = () => {
     console.log("checkout")
 }
 const checkIn = (id) => {
-    console.log("check in home: ", id)
     next.value = true
     motelId.value = id
 }
@@ -100,4 +98,8 @@ onMounted(() => {
 })
 </script>
 
-<style scoped></style>
+<style scoped>
+.content-area {
+    height: calc(100vh - 4rem);
+}
+</style>

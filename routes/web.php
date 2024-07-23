@@ -1,28 +1,30 @@
 <?php
+use Carbon\Carbon;
 use App\Models\Room;
 use App\Models\User;
 use Inertia\Inertia;
 use App\Models\Motel;
-use App\Models\GuestType;
 
+use App\Models\GuestType;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RateController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\ScanController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\GuestController;
 use App\Http\Controllers\MotelController;
+use App\Http\Controllers\UploadController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\RoomTypeController;
 use App\Http\Controllers\GuestTypeController;
 use App\Http\Controllers\AddMotelUserController;
-use App\Http\Controllers\RoleController;
-use App\Http\Controllers\UploadController;
 use App\Http\Controllers\UploadVoucherController;
+use App\Models\Booking;
 use Spatie\Permission\Middlewares\PermissionMiddleware;
 
 Route::get('/', function () {
@@ -70,8 +72,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/upload/voucher/home',[UploadController::class,'voucherIndex'])->name('upload.voucher.home');
 });
 Route::get('/test',function() {
-    $user = User::findOrFail(1);
-    $data = $user->with('vouchers.guests.types')->get();
-    dd($data);
+    $now = Carbon::now('Asia/Manila')->format('Y-m-d');
+    $bookings = Booking::whereDate('check_out_date',$now)->get();
+    foreach ($bookings as $book) {
+        Room::where('id',$book->room_id)->where('user_id',1)->update(['status' => 'Checked Out']);
+    }
 });
 require __DIR__.'/auth.php';

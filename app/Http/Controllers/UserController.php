@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\Role;
 use App\Models\Room;
 use App\Models\User;
 use App\Models\Motel;
+use App\Models\Booking;
 use App\Models\Voucher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -67,11 +69,17 @@ class UserController extends Controller
 
     public function home(Request $request)
     {
-        
+        $now = Carbon::now('Asia/Manila')->format('Y-m-d');
+        $bookings = Booking::whereDate('check_out_date',$now)->get();
+        foreach ($bookings as $book) {
+            Room::where('id',$book->room_id)->where('user_id',auth()->user()->id)->update(['status' => 'Checked Out']);
+        }
         return inertia('User/Home',[
             'roles' => auth()->user()->getRoleNames(),
             'permissions' => auth()->user()->getAllPermissions()->pluck('name'),
-            'rooms' => Room::all(),
+            'rooms' => Room::with(['bookings' => function ($query) use ($now){
+                return $query->whereDate('check_out_date',$now);
+            }])->where('user_id',auth()->user()->id)->orderBy('room_number','asc')->get(),
         ]);
     }
 }
