@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreRoomRequest;
 use App\Models\Rate;
 use App\Models\Room;
 use App\Models\RoomType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Http\Requests\StoreRoomRequest;
+use App\Http\Requests\StoreRepairRoomRequest;
+use Carbon\Carbon;
 
 class RoomController extends Controller
 {
@@ -79,9 +82,13 @@ class RoomController extends Controller
     public function update(Request $request, Room $room)
     {
         try {
+            DB::beginTransaction();
             $room->update($request->all());
+            auth()->user()->repair_rooms()->where('room_id',$room->id)->where('status','ONGOING')->update(['status' => 'DONE']);
+            DB::commit();
             return back();
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json($e->getMessage());
         }
     }
@@ -93,5 +100,24 @@ class RoomController extends Controller
     {
         $room->delete();
         return back();
+    }
+
+    public function repair(StoreRepairRoomRequest $request)
+    {
+        try {
+            DB::beginTransaction();
+            auth()->user()->repair_rooms()->create([
+                'start_of_repair' => Carbon::parse($request->start_of_repair)->format('Y-m-d'),
+                'end_of_repair' => Carbon::parse($request->end_of_repair)->format('Y-m-d'),
+                'availability_date' => Carbon::parse($request->availability_date)->format('Y-m-d'),
+                'room_id' => $request->room_id,
+            ]);
+            Room::where('id',$request->room_id)->update(['status' => 'Out of Service']);
+            DB::commit();
+            return back();
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json($e->getMessage());
+        }
     }
 }

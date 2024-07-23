@@ -41,4 +41,9 @@ class Room extends Model
     {
         return $this->hasMany(Booking::class);
     }
+
+    public function room_repairs(): HasMany
+    {
+        return $this->hasMany(RepairRoom::class);
+    }
 }

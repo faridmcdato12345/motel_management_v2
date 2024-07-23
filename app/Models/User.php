@@ -77,4 +77,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Room::class);
     }
+
+    public function repair_rooms(): HasMany
+    {
+        return $this->hasMany(RepairRoom::class);
+    }
 }

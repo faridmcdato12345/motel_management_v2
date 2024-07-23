@@ -5,6 +5,7 @@ use App\Models\User;
 use Inertia\Inertia;
 use App\Models\Motel;
 
+use App\Models\Booking;
 use App\Models\GuestType;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
@@ -22,9 +23,10 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\RoomTypeController;
 use App\Http\Controllers\GuestTypeController;
+use App\Http\Controllers\RapairRoomController;
 use App\Http\Controllers\AddMotelUserController;
+use App\Http\Controllers\RoomRepairController;
 use App\Http\Controllers\UploadVoucherController;
-use App\Models\Booking;
 use Spatie\Permission\Middlewares\PermissionMiddleware;
 
 Route::get('/', function () {
@@ -56,6 +58,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('/rates', RateController::class)->except('create','edit');
     Route::resource('/rooms', RoomController::class)->except('create','edit');
+    Route::post('/rooms/repair',[RoomController::class,'repair'])->name('room.repair');
     Route::resource('/vouchers', VoucherController::class)->except('create','edit');
 
     Route::get('/home',[HomeController::class,'index'])->name('home.index');

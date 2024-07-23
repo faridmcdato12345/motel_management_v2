@@ -70,7 +70,7 @@ class UserController extends Controller
     public function home(Request $request)
     {
         $now = Carbon::now('Asia/Manila')->format('Y-m-d');
-        $bookings = Booking::whereDate('check_out_date',$now)->get();
+        $bookings = Booking::whereDate('check_out_date','<=',$now)->where('status','checked_id')->get();
         foreach ($bookings as $book) {
             Room::where('id',$book->room_id)->where('user_id',auth()->user()->id)->update(['status' => 'Checked Out']);
         }
@@ -78,7 +78,9 @@ class UserController extends Controller
             'roles' => auth()->user()->getRoleNames(),
             'permissions' => auth()->user()->getAllPermissions()->pluck('name'),
             'rooms' => Room::with(['bookings' => function ($query) use ($now){
-                return $query->whereDate('check_out_date',$now);
+                $query->orderBy('id','desc')->limit(1);
+            },'room_repairs' => function($query){
+                $query->where('status','ONGOING');
             }])->where('user_id',auth()->user()->id)->orderBy('room_number','asc')->get(),
         ]);
     }
