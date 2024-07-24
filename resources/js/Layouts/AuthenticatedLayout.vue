@@ -11,6 +11,7 @@ import { usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const showingNavigationDropdown = ref(false);
+const showingSettingNavigationDropDown = ref(false)
 
 const page = usePage()
 const auth = computed(() => page.props.auth);
@@ -49,26 +50,9 @@ const hasPermission = (permission) => {
                                     :active="route().current('motel.index')">
                                     Motel
                                 </NavLink>
-                                <NavLink v-if="hasPermission('show motel')" :href="route('roles.index')"
-                                    :active="route().current('roles.index')">
-                                    Roles
-                                </NavLink>
                                 <NavLink v-if="hasPermission('show motel')" :href="route('all.vouchers')"
                                     :active="route().current('all.vouchers')">
                                     Vouchers
-                                </NavLink>
-                                <NavLink :href="route('guest_type.index')"
-                                    :active="route().current('guest_type.index')">
-                                    Guest Age Group
-                                </NavLink>
-                                <NavLink :href="route('rates.index')" :active="route().current('rates.index')">
-                                    Rate
-                                </NavLink>
-                                <NavLink :href="route('room_type.index')" :active="route().current('room_type.index')">
-                                    Room Type
-                                </NavLink>
-                                <NavLink :href="route('rooms.index')" :active="route().current('rooms.index')">
-                                    Rooms
                                 </NavLink>
                             </div>
                         </div>
@@ -102,6 +86,31 @@ const hasPermission = (permission) => {
 
                                             <template #content>
                                                 <DropdownLink :href="route('profile.edit')"> Profile </DropdownLink>
+                                                <a href="#"
+                                                    class="block w-full px-4 py-2 text-start text-sm leading-5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-800 transition duration-150 ease-in-out"
+                                                    @click.stop="showingSettingNavigationDropDown = !showingSettingNavigationDropDown">
+                                                    Settings
+                                                </a>
+                                                <div class="mt-3 px-4"
+                                                    :class="{ block: showingSettingNavigationDropDown, hidden: !showingSettingNavigationDropDown }">
+                                                    <DropdownLink :href="route('guest_type.index')">
+                                                        Guest Age Group
+                                                    </DropdownLink>
+                                                    <DropdownLink :href="route('rates.index')">
+                                                        Rate
+                                                    </DropdownLink>
+                                                    <DropdownLink :href="route('room_type.index')"
+                                                        :active="route().current('room_type.index')">
+                                                        Room Type
+                                                    </DropdownLink>
+                                                    <DropdownLink :href="route('rooms.index')">
+                                                        Rooms
+                                                    </DropdownLink>
+                                                    <DropdownLink v-if="hasPermission('show motel')"
+                                                        :href="route('roles.index')">
+                                                        Roles
+                                                    </DropdownLink>
+                                                </div>
                                                 <DropdownLink :href="route('logout')" method="post" as="button">
                                                     Log Out
                                                 </DropdownLink>
@@ -156,20 +165,7 @@ const hasPermission = (permission) => {
                             :active="route().current('all.vouchers')">
                             Vouchers
                         </ResponsiveNavLink>
-                        <ResponsiveNavLink :href="route('guest_type.index')"
-                            :active="route().current('guest_type.index')">
-                            Guest Age Group
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink :href="route('rates.index')" :active="route().current('rates.index')">
-                            Rate
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink :href="route('room_type.index')"
-                            :active="route().current('room_type.index')">
-                            Room Type
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink :href="route('rooms.index')" :active="route().current('rooms.index')">
-                            Rooms
-                        </ResponsiveNavLink>
+
                     </div>
 
                     <!-- Responsive Settings Options -->
@@ -180,7 +176,29 @@ const hasPermission = (permission) => {
                             </div>
                             <div class="font-medium text-sm text-gray-500">{{ $page.props.auth.user.email }}</div>
                         </div>
-
+                        <div class="mt-3 px-4"
+                            @click="showingSettingNavigationDropDown = !showingSettingNavigationDropDown">
+                            <div class="font-medium text-base text-gray-800 dark:text-gray-200">
+                                Settings
+                            </div>
+                        </div>
+                        <div class="mt-3 px-4"
+                            :class="{ block: showingSettingNavigationDropDown, hidden: !showingSettingNavigationDropDown }">
+                            <ResponsiveNavLink :href="route('guest_type.index')"
+                                :active="route().current('guest_type.index')">
+                                Guest Age Group
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('rates.index')" :active="route().current('rates.index')">
+                                Rate
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('room_type.index')"
+                                :active="route().current('room_type.index')">
+                                Room Type
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('rooms.index')" :active="route().current('rooms.index')">
+                                Rooms
+                            </ResponsiveNavLink>
+                        </div>
                         <div class="mt-3 space-y-1">
                             <ResponsiveNavLink :href="route('profile.edit')"> Profile </ResponsiveNavLink>
                             <ResponsiveNavLink :href="route('logout')" method="post" as="button">

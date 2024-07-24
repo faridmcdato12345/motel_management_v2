@@ -69,7 +69,7 @@ class UserController extends Controller
 
     public function home(Request $request)
     {
-        $now = Carbon::now('Asia/Manila')->format('Y-m-d');
+        $now = Carbon::now(env('TIMEZONE'))->format('Y-m-d');
         $bookings = Booking::whereDate('check_out_date','<=',$now)->where('status','checked_id')->get();
         foreach ($bookings as $book) {
             Room::where('id',$book->room_id)->where('user_id',auth()->user()->id)->update(['status' => 'Checked Out']);

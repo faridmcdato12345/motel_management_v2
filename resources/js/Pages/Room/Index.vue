@@ -17,16 +17,25 @@
                 </div>
                 <div>
                     <form @submit.prevent="handleSubmit">
-                        <InputLabel>Room Number:</InputLabel>
+                        <InputLabel class="mt-4">Room Number:</InputLabel>
                         <TextInput type="number" class="mt-1 block w-full" required v-model="formData.room_number" />
-                        <InputLabel>Type:</InputLabel>
+                        <InputLabel class="mt-4">Maximum Capacity:</InputLabel>
+                        <TextInput type="number" class="mt-1 block w-full" required
+                            v-model="formData.maximum_capacity" />
+                        <div class="flex items-center mt-4 space-x-2">
+                            <InputLabel>Sharable?</InputLabel>
+                            <div>
+                                <input type="checkbox" id="checkbox" v-model="formData.is_shared" />
+                            </div>
+                        </div>
+                        <InputLabel class="mt-4">Type:</InputLabel>
                         <select v-model="formData.room_type_id"
                             class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
                             <option value="">select room type...</option>
                             <option v-for="type in props.roomTypes" :key="type.id" :value="type.id">{{ type.name }}
                             </option>
                         </select>
-                        <InputLabel>Rate:</InputLabel>
+                        <InputLabel class="mt-4">Rate:</InputLabel>
                         <select v-model="formData.rate_id"
                             class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
                             <option value="">select rate...</option>
@@ -34,17 +43,10 @@
                                 }}
                             </option>
                         </select>
-                        <InputLabel>Status:</InputLabel>
-                        <select v-model="formData.is_occupied"
-                            class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                            <option value="">select status...</option>
-                            <option value="0">AVAILABLE</option>
-                            <option value="1">NOT AVAILABLE</option>
-                        </select>
-                        <div class="flex justify-end">
-                            <div>
+                        <div class="flex justify-end mt-4">
+                            <div class="flex space-x-2">
                                 <PrimaryButton>Create</PrimaryButton>
-                                <DangerButton @click.prevent="showModal = false">Cancel</DangerButton>
+                                <DangerButton @click.prevent="closeModal">Cancel</DangerButton>
                             </div>
                         </div>
                     </form>
@@ -57,21 +59,37 @@
                     <h6>Edit Rate</h6>
                 </div>
                 <div>
-                    <form @submit.prevent="handleUpdate">
-                        <InputLabel>Price Per Night:</InputLabel>
+                    <form @submit.prevent="handleSubmit">
+                        <InputLabel class="mt-4">Room Number:</InputLabel>
+                        <TextInput type="number" class="mt-1 block w-full" required v-model="formData.room_number" />
+                        <InputLabel class="mt-4">Maximum Capacity:</InputLabel>
                         <TextInput type="number" class="mt-1 block w-full" required
-                            v-model="formData.price_per_night" />
-                        <InputLabel>Status:</InputLabel>
-                        <select v-model="formData.status"
-                            class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                            <option value="">select status...</option>
-                            <option value="Active">ACTIVE</option>
-                            <option value="Inactive">INACTIVE</option>
-                        </select>
-                        <div class="flex justify-end">
+                            v-model="formData.maximum_capacity" />
+                        <div class="flex items-center mt-4 space-x-2">
+                            <InputLabel>Sharable?</InputLabel>
                             <div>
-                                <PrimaryButton>Update</PrimaryButton>
-                                <DangerButton @click.prevent="showModalEdit = false">Cancel</DangerButton>
+                                <input type="checkbox" id="checkbox" v-model="formData.is_shared" />
+                            </div>
+                        </div>
+                        <InputLabel class="mt-4">Type:</InputLabel>
+                        <select v-model="formData.room_type_id"
+                            class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                            <option value="">select room type...</option>
+                            <option v-for="type in props.roomTypes" :key="type.id" :value="type.id">{{ type.name }}
+                            </option>
+                        </select>
+                        <InputLabel class="mt-4">Rate:</InputLabel>
+                        <select v-model="formData.rate_id"
+                            class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                            <option value="">select rate...</option>
+                            <option v-for="rate in props.rates" :key="rate.id" :value="rate.id">{{ rate.price_per_night
+                                }}
+                            </option>
+                        </select>
+                        <div class="flex justify-end mt-4">
+                            <div class="flex space-x-2">
+                                <PrimaryButton>Create</PrimaryButton>
+                                <DangerButton @click.prevent="closeModal">Cancel</DangerButton>
                             </div>
                         </div>
                     </form>
@@ -118,10 +136,18 @@ const formFields = [
 
 const formData = useForm({
     room_number: '',
-    is_occupied: '',
+    is_occupied: 0,
     room_type_id: '',
     rate_id: '',
+    maximum_capacity: '',
+    is_shared: 0,
+    status: 'Available'
 })
+const closeModal = () => {
+    formData.reset()
+    showModalEdit.value = false
+    showModal.value = false
+}
 const columns = ref([
     { label: 'ID', key: 'id' },
     { label: 'ROOM NUMBER', key: 'room_number' },
@@ -172,8 +198,14 @@ const handleUpdate = async () => {
 const editData = async (id) => {
     itemId.value = id
     const result = await fetchItem(`rooms/${id}`)
+    console.log(result)
     if (result.success) {
-        formData.price_per_night = result.data.price_per_night
+        formData.room_number = result.data.room_number
+        formData.is_occupied = result.data.is_occupied
+        formData.room_type_id = result.data.types.id
+        formData.rate_id = result.data.rates.id
+        formData.maximum_capacity = result.data.maximum_capacity
+        formData.is_shared = result.data.is_shared
         formData.status = result.data.status
         showModalEdit.value = true
     } else {

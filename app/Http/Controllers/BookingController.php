@@ -52,7 +52,8 @@ class BookingController extends Controller
      */
     public function update(Request $request, Booking $booking)
     {
-        //
+        $booking->update($request->all());
+        return back();
     }
 
     /**

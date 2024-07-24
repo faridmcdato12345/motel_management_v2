@@ -58,7 +58,8 @@ class VoucherController extends Controller
      */
     public function show(Voucher $voucher)
     {
-        //
+        $vouchers = Voucher::with('guests','motels')->where('id',$voucher->id)->first();
+        return response()->json($vouchers);
     }
 
     /**
@@ -74,7 +75,8 @@ class VoucherController extends Controller
      */
     public function update(Request $request, Voucher $voucher)
     {
-        //
+        $voucher->update($request->all());
+        return back();
     }
 
     /**
@@ -82,7 +84,8 @@ class VoucherController extends Controller
      */
     public function destroy(Voucher $voucher)
     {
-        //
+        $voucher->delete();
+        return back();
     }
 
     public function all(Request $request)
@@ -102,10 +105,6 @@ class VoucherController extends Controller
             DB::beginTransaction();
             if(count($request->clients) == 1){
                 $nameParts = explode(' ',$request->clients[0]);
-                $checkInDateString = $request->dates[0];
-                $checkOutDateString = $request->dates[1];
-                $checkInDate = DateTime::createFromFormat('m/d/y',$checkInDateString);
-                $checkOutDate = DateTime::createFromFormat('m/d/y',$checkOutDateString);
                 $guest = Guest::create([
                     'user_id' => auth()->user()->id,
                     'type_id' => $request->type[0],
@@ -125,8 +124,8 @@ class VoucherController extends Controller
                 Booking::create([
                     'room_id' => $room->id,
                     'guest_id' => $guest->id,
-                    'check_in_date' => $checkInDate->format('Y-m-d'),
-                    'check_out_date' => $checkOutDate->format('Y-m-d'),
+                    'check_in_date' => $request->check_in,
+                    'check_out_date' => $request->check_out,
                     'total_price' => $request->total_amount,
                     'status' => 'checked_in'
                 ]);
@@ -134,10 +133,6 @@ class VoucherController extends Controller
             }else if(count($request->clients ) > 1){
                 for($i = 0; $i < count($request->clients); $i++){
                     $nameParts = explode(' ',$request->clients[$i]);
-                    $checkInDateString = $request->dates[0];
-                    $checkOutDateString = $request->dates[1];
-                    $checkInDate = DateTime::createFromFormat('m/d/y',$checkInDateString);
-                    $checkOutDate = DateTime::createFromFormat('m/d/y',$checkOutDateString);
                     $guest = Guest::create([
                         'user_id' => auth()->user()->id,
                         'type_id' => $request->type[$i],
@@ -157,8 +152,8 @@ class VoucherController extends Controller
                     Booking::create([
                         'room_id' => $room->id,
                         'guest_id' => $guest->id,
-                        'check_in_date' => $checkInDate->format('Y-m-d'),
-                        'check_out_date' => $checkOutDate->format('Y-m-d'),
+                        'check_in_date' => $request->check_in,
+                        'check_out_date' => $request->check_out,
                         'total_price' => $request->total_amount,
                         'status' => 'checked_in'
                     ]);

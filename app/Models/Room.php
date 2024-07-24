@@ -17,10 +17,12 @@ class Room extends Model
         'room_type_id',
         'is_occupied',
         'user_id',
-        'status'
+        'status',
+        'maximum_capacity',
+        'is_shared'
     ];
 
-    protected $with = ['users','types'];
+    protected $with = ['users','types','rates'];
 
     public function rates(): BelongsTo
     {

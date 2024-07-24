@@ -88,7 +88,7 @@ class GuestController extends Controller
         //
     }
 
-    public function storeBulk(Request $request)
+    public function storeBulk(Request $request, Room $room)
     {
         try {
             DB::beginTransaction();
@@ -125,11 +125,11 @@ class GuestController extends Controller
             }
             DB::commit();
             
-            return redirect()->back();
+            return redirect()->route('user.home');
             
-        } catch (\Throwable $th) {
+        } catch (\Exception $e) {
             DB::rollback();
-            return response()->json($th->getMessage());
+            return response()->json($e->getMessage());
         }
         
     }

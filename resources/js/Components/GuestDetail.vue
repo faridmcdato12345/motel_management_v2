@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="mt-4">
         <div v-if="isMultiForm" class="multi">
             <div v-for="(formSection, index) in gptData" :key="index">
                 <MultiFormSection :modelValue="formSection" v-if="step === index"
@@ -40,7 +40,11 @@ const props = defineProps({
     gptData: Object,
     guestTypes: Object,
     roomNumbers: Object,
-    room: Object
+    room: Object,
+    reCheckIn: {
+        type: Boolean,
+        default: false
+    }
 })
 const isMultiClient = ref(false)
 const isMultiForm = ref(false)
@@ -55,28 +59,41 @@ const formData = useForm({
 })
 const step = ref(0)
 const nextStep = async () => {
-    console.log("guest detail: ", props.gptData.length)
     if (step.value == props.gptData.length - 1) {
-
-        console.log("clients: ", props.gptData)
         emit('compiledData', props.gptData);
-        const result = await storeItem('/guest/store/multi_client', props.gptData)
+        if (props.reCheckIn) {
+            await axios.patch(route('re_check_in.upload', props.room.id), {
+                check_in_date: props.gptData.check_in,
+                check_out_date: props.gptData.check_out,
+            })
+        }
+        const result = await storeItem(`/guest/store/multi_client/${props.room.id}`, props.gptData)
         if (result.success) {
-            console.log("success storing voucher")
         } else {
-            console.log("error: ", result.error)
+            return
         }
     }
-    else if (props.gptData.length = 'undefined') {
+    if (props.gptData.length > 1) {
+        step.value++
+    }
+    if (props.gptData.length = 'undefined') {
+        console.log("props.gptData: ", props.gptData)
         emit('compiledData', props.gptData);
+        if (props.reCheckIn) {
+            await axios.patch(route('re_check_in.upload', props.room.id), {
+                check_in_date: props.gptData.check_in,
+                check_out_date: props.gptData.check_out,
+            })
+        }
         const result = await storeItem(`/store/multi_client/voucher/${props.room.id}`, props.gptData)
         if (result.success) {
             router.get(route('user.home'))
-            console.log("success storing voucher")
         } else {
-            console.log("error: ", result.error)
+            return
         }
+
     }
+
     if (step.value < props.gptData.length) {
         console.log("clients: ", props.gptData)
         step.value++
@@ -98,8 +115,10 @@ onMounted(() => {
     console.log("roomNumbers guestde: ", props.roomNumbers)
     if (props.gptData.length > 1) {
         isMultiForm.value = true
+        console.log("isMultiForm")
     } else if (props.gptData.clients.length > 1) {
         isMultiClient.value = true
+        console.log("isMultiClient")
     }
 })
 </script>

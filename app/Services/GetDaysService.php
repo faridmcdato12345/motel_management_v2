@@ -20,6 +20,6 @@ class GetDaysService
         $fromDate = Carbon::createFromFormat('m/d/y', $dates[0]);
         $toDate = Carbon::createFromFormat('m/d/y', $dates[1]);
 
-        return $fromDate->diffInDays($toDate);
+        return $fromDate->diffInDays($toDate) + 1;
     }
 }

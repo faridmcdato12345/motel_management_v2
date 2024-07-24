@@ -37,9 +37,8 @@ class UploadVoucherController extends Controller
         
         if ($request->file('image')) {
             try {
-
                 $path = $request->file('image')->store('images');
-                $fullPath = Storage::path($path);
+                $fullPath = config('app.env') === 'local' ? Storage::path($path) : Storage::url($path);
                 $result = $this->imgurService->uploadImage($fullPath);
                 Log::info('Image uploaded, response received');
                 $result = $this->gpt4VisionService->analyzeImage($result['data']['link'],$fullPath);

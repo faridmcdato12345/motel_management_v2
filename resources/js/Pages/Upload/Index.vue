@@ -5,18 +5,9 @@
         <Transition appear>
             <div class="flex flex-col w-full items-center justify-center">
                 <div class="w-full flex-col space-y-4">
-                    <!-- <div class="flex justify-center w-full bg-blue-400  rounded-md">
-                        <Link :href="route('upload.voucher.home')">
-                        <button class="text-white p-4 font-black text-lg">VOUCHER</button>
-                        </Link>
-                    </div>
-                    <div class="flex justify-center w-full bg-blue-400  rounded-md">
-                        <button class="text-white p-4 font-black text-lg">ID</button>
-                    </div> -->
                     <FileUpload @update-data="getOpenAiResponse" v-if="step == 1" />
-                    <!-- <Scan v-if="step == 1" @open-ai-response="getOpenAiResponse" /> -->
                     <GuestDetail v-if="step == 2" :gptData="openAiData" @update:gptData="getUpdatedData"
-                        :guest-types="guestTypes" :room="room" />
+                        :guest-types="guestTypes" :room="room" :re-check-in="recheckin" />
                 </div>
             </div>
         </Transition>
@@ -39,7 +30,11 @@ import { ref, onMounted, onUnmounted } from 'vue';
 
 const props = defineProps({
     guestTypes: Object,
-    room: Object
+    room: Object,
+    recheckin: {
+        type: Boolean,
+        default: false
+    }
 })
 const openAiData = ref({})
 const getOpenAiResponse = (result) => {
@@ -57,7 +52,9 @@ const getUpdatedData = (result) => {
     console.log("getUpdatedData: ", result)
 }
 onMounted(() => {
-    console.log("roomNumbers: ", props.roomNumbers)
+    if (props.recheckin) {
+
+    }
 })
 </script>
 

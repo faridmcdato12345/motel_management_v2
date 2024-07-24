@@ -99,8 +99,14 @@
                             @click.prevent="checkIn">Re-check In</button>
                         <button class="w-full bg-sky-500 p-4 rounded-md  mt-4" v-if="checkOutStatus"
                             @click.prevent="backToService">Available</button>
-                        <button class="w-full bg-green-500 p-4 rounded-md text-white mt-4" v-if="inUseStatus"
-                            @click.prevent="checkOut">Check Out</button>
+                        <div v-if="inUseStatus">
+                            <button class="w-full bg-green-500 p-4 rounded-md text-white mt-4"
+                                @click.prevent="checkOut">Check Out</button>
+                            <button class="w-full bg-green-500 p-4 rounded-md  mt-4"
+                                @click.prevent="recheckInCheckedIn">Re-check
+                                In</button>
+                        </div>
+
                         <button class="w-full bg-green-500 p-4 rounded-md text-white mt-4" v-if="outOfServiceStatus"
                             @click.prevent="backToService">Back to Service</button>
                         <button class="w-full bg-red-400 p-4 rounded-md text-white mt-4"
@@ -157,6 +163,8 @@ const availableDate = ref()
 const inUseStatus = ref()
 const outOfServiceStatus = ref(false)
 const { isLoading, error, storeItem, fetchItem, updateItem } = useData()
+
+const emit = defineEmits(['checkIn', 'recheckInCheckedIn'])
 const props = defineProps({
     content: String,
     data: {
@@ -226,6 +234,11 @@ const roomRepairStart = (result) => {
     const option = { year: 'numeric', month: 'long', day: 'numeric' };
     return startDate.toLocaleDateString('en-US', option) + '-' + endDate.toLocaleDateString('en-US', option)
 
+}
+const recheckInCheckedIn = () => {
+    console.log("recheckInCheckedIn")
+    console.log(roomId.value)
+    emit('recheckInCheckedIn', roomId.value)
 }
 const availabilityDate = (result) => {
     const available = Object.keys(result).map(key => {
@@ -326,7 +339,7 @@ const showModal = (index, status) => {
 const toggleDetails = (index) => {
     expandedRows.value[index] = !expandedRows.value[index];
 };
-const emit = defineEmits(['checkIn'])
+
 const backToService = async () => {
     const formData = useForm({
         status: 'Available'
@@ -386,10 +399,10 @@ const detailButton = (status) => {
 }
 onMounted(() => {
     console.log(props.data)
-    const startDate = new Date();
-    const endDate = new Date(new Date().setDate(startDate.getDate() + 7));
-    repairDate.value = [startDate, endDate];
-    availableDate.value = startDate
+    // const startDate = new Date();
+    // const endDate = new Date(new Date().setDate(startDate.getDate() + 7));
+    // repairDate.value = [startDate, endDate];
+    // availableDate.value = startDate
 })
 </script>
 

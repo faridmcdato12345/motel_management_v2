@@ -4,19 +4,31 @@
 
     <AuthenticatedLayout>
         <div class="md:pl-12 md:pr-4 content-area">
-            <div v-if="next" class="flex flex-col space-y-4 items-center justify-center w-full">
-                <Link :href="route('scan.index', motelId)">
-                <PrimaryButton :motel-id="motelId">Scan Voucher</PrimaryButton>
-                </Link>
-                <Link :href="route('upload.voucher.index', motelId)">
-                <PrimaryButton :motel-id="motelId">Upload Voucher</PrimaryButton>
-                </Link>
+            <div v-if="next">
+                <div v-if="recheckIn" class="flex flex-col space-y-4 items-center justify-center w-full">
+                    <Link :href="route('scan.index', motelId)">
+                    <PrimaryButton :motel-id="motelId">Scan Voucher</PrimaryButton>
+                    </Link>
+                    <Link :href="route('re_check_in.upload.index', motelId)">
+                    <PrimaryButton :motel-id="motelId">Upload Voucher</PrimaryButton>
+                    </Link>
+                </div>
+                <div v-else class="flex flex-col space-y-4 items-center justify-center w-full">
+                    <Link :href="route('scan.index', motelId)">
+                    <PrimaryButton :motel-id="motelId">Scan Voucher</PrimaryButton>
+                    </Link>
+                    <Link :href="route('upload.voucher.index', motelId)">
+                    <PrimaryButton :motel-id="motelId">Upload Voucher</PrimaryButton>
+                    </Link>
+                </div>
+
             </div>
             <div v-else>
                 <RoomDatatable :data="props.rooms" :columns="columns" :pagination="props.rooms"
                     @limit-query="limitQuery" @search-field-query="searchFieldQuery" @delete="deleteData"
                     @edit="editData" @checkout="checkout" :query-limit="props.queryLimit" :route-create="createRoute"
-                    :query-name="props.queryName" :action="false" :checkout="false" @check-in="checkIn" />
+                    :query-name="props.queryName" :action="false" :checkout="false" @check-in="checkIn"
+                    @recheck-in-checked-in="recheckInCheckedIn" />
             </div>
         </div>
         <!-- <div>
@@ -35,6 +47,7 @@ import RoomDatatable from "@/Components/RoomDatatable.vue";
 
 const motelId = ref('')
 const next = ref(false)
+const recheckIn = ref(false)
 const columns = ref([
     { label: 'ROOM #', key: 'room_number' },
 ])
@@ -50,48 +63,10 @@ const checkIn = (id) => {
     next.value = true
     motelId.value = id
 }
-const limitQuery = (name, e) => {
-    let qParams = {}
-    let nParams = {}
-    let params = {}
-    if (props.queryName) {
-        nParams['name'] = props.queryName
-        qParams[name] = e
-
-        params = { ...qParams, ...nParams }
-    } else if (!props.queryName) {
-        qParams[name] = e
-        params = qParams
-    } else {
-        delete qParams[name]
-        delete nParams['name']
-    }
-    router.get(route('users.index', params))
-}
-const searchFieldQuery = (name, e) => {
-    let qParams = {}
-    let nParams = {}
-    let params = {}
-    if (props.queryLimit) {
-        nParams[name] = e
-        qParams['query'] = props.queryLimit
-
-        params = { ...nParams, ...qParams }
-    } else if (!props.queryLimit) {
-        nParams[name] = e
-        params = nParams
-    } else {
-        delete qParams[name]
-        delete nParams['name']
-    }
-    router.get(route('users.index', params))
-}
-const deleteData = (id) => {
-    if (confirm('Are you sure you want to delete this user?')) {
-        router.delete(route('users.destroy', id), {
-            preserveState: true
-        })
-    }
+const recheckInCheckedIn = (id) => {
+    recheckIn.value = true
+    next.value = true
+    motelId.value = id
 }
 onMounted(() => {
     console.log(props.rooms)

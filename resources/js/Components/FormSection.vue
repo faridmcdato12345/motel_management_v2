@@ -17,15 +17,6 @@
                 </select>
             </div>
         </div>
-        <!-- <hr class="mt-4 mb-4">
-        <div>
-            <InputLabel>Room Number:</InputLabel>
-            <select v-if="roomNumbers.length" v-model="localFormData.room_number" class="mt-1 block w-full">
-                <option value="">{{ roomNumbers.length ? '-- Select room --' : 'No Room Available' }}</option>
-                <option :value="room.id" v-for="room in roomNumbers" :key="room.id">{{ room.room_number }}</option>
-            </select>
-            <div v-else class="border-red-400 border-2 p-4 rounded-md">No Room Available</div>
-        </div> -->
         <hr class="mt-4 mb-4">
         <div>
             <InputLabel>Case Number:</InputLabel>
@@ -38,13 +29,23 @@
         </div>
         <hr class="mt-4 mb-4">
         <div>
+            <InputLabel>Check In Date:</InputLabel>
+            <TextInput type="date" class="mt-1 block w-full" required v-model="localFormData.check_in" />
+        </div>
+        <hr class="mt-4 mb-4">
+        <div>
+            <InputLabel>Check Out Date:</InputLabel>
+            <TextInput type="date" class="mt-1 block w-full" required v-model="localFormData.check_out" />
+        </div>
+        <hr class="mt-4 mb-4">
+        <div>
             <InputLabel>Amount:</InputLabel>
-            <TextInput type="text" class="mt-1 block w-full" required v-model="localFormData.total" />
+            <TextInput type="number" class="mt-1 block w-full" required v-model="localFormData.total" />
         </div>
         <hr class="mt-4 mb-4">
         <div>
             <InputLabel>Self Pay:</InputLabel>
-            <TextInput type="text" class="mt-1 block w-full" required v-model="localFormData.self_pay" />
+            <TextInput type="number" class="mt-1 block w-full" required v-model="localFormData.self_pay" />
         </div>
     </div>
 </template>

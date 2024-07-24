@@ -80,7 +80,14 @@ const uploadFile = (fileObj) => {
             spinner.value = false
             nextButton.value = true
             console.log("responseData: ", responseData.value)
-        }).catch(() => {
+            if (responseData.value.original.error) {
+                nextButton.value = false
+                spinner.value = false
+            } else {
+
+            }
+        }).catch((error) => {
+            console.log(error)
             fileObj.uploading = false;
         });
     } catch (error) {
