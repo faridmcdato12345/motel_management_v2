@@ -177,6 +177,7 @@ const uploadPhoto = async () => {
         }).then((result) => {
             loading.value = false
             responseData.value = result.data
+            done.value = false
 
         }).catch(() => {
             loading.value = false
@@ -184,7 +185,6 @@ const uploadPhoto = async () => {
         });
 
     } catch (error) {
-        console.log("wtf sca")
         console.error('Error uploading image:', error);
         loading.value = false
     } finally {

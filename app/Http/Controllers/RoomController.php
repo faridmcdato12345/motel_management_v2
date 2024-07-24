@@ -93,7 +93,6 @@ class RoomController extends Controller
             return response()->json($e->getMessage());
         }
     }
-
     /**
      * Remove the specified resource from storage.
      */
