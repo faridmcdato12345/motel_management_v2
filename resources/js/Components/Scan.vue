@@ -175,6 +175,7 @@ const uploadPhoto = async () => {
                 'Content-Type': 'multipart/form-data'
             },
         }).then((result) => {
+            console.log("this is result: ", result)
             loading.value = false
             responseData.value = result.data
             done.value = false
