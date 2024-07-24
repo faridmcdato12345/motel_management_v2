@@ -60,7 +60,6 @@ class ImgurService
             }
             return ['error' => 'Failed to upload image'];
         }catch (\Exception $e) {
-            dd("Exception");
             Log::error('General error: ' . $e->getMessage());
             return ['error' => 'Failed to upload image'];
         }
