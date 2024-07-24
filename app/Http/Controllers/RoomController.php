@@ -85,7 +85,6 @@ class RoomController extends Controller
         try {
             DB::beginTransaction();
             $room->update($request->all());
-            Booking::where('room_id',)
             auth()->user()->repair_rooms()->where('room_id',$room->id)->where('status','ONGOING')->update(['status' => 'DONE']);
             DB::commit();
             return back();
