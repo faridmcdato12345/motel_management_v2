@@ -22,27 +22,7 @@
                         <InputLabel class="mt-4">Maximum Capacity:</InputLabel>
                         <TextInput type="number" class="mt-1 block w-full" required
                             v-model="formData.maximum_capacity" />
-                        <div class="flex items-center mt-4 space-x-2">
-                            <InputLabel>Sharable?</InputLabel>
-                            <div>
-                                <input type="checkbox" id="checkbox" v-model="formData.is_shared" />
-                            </div>
-                        </div>
-                        <InputLabel class="mt-4">Type:</InputLabel>
-                        <select v-model="formData.room_type_id"
-                            class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                            <option value="">select room type...</option>
-                            <option v-for="type in props.roomTypes" :key="type.id" :value="type.id">{{ type.name }}
-                            </option>
-                        </select>
-                        <InputLabel class="mt-4">Rate:</InputLabel>
-                        <select v-model="formData.rate_id"
-                            class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                            <option value="">select rate...</option>
-                            <option v-for="rate in props.rates" :key="rate.id" :value="rate.id">{{ rate.price_per_night
-                                }}
-                            </option>
-                        </select>
+
                         <div class="flex justify-end mt-4">
                             <div class="flex space-x-2">
                                 <PrimaryButton>Create</PrimaryButton>
@@ -56,36 +36,15 @@
         <Modal :show="showModalEdit" @close="showModalEdit = false">
             <div class="p-4">
                 <div class="">
-                    <h6>Edit Rate</h6>
+                    <h6>Edit Room</h6>
                 </div>
                 <div>
-                    <form @submit.prevent="handleSubmit">
+                    <form @submit.prevent="handleUpdate">
                         <InputLabel class="mt-4">Room Number:</InputLabel>
                         <TextInput type="number" class="mt-1 block w-full" required v-model="formData.room_number" />
                         <InputLabel class="mt-4">Maximum Capacity:</InputLabel>
                         <TextInput type="number" class="mt-1 block w-full" required
                             v-model="formData.maximum_capacity" />
-                        <div class="flex items-center mt-4 space-x-2">
-                            <InputLabel>Sharable?</InputLabel>
-                            <div>
-                                <input type="checkbox" id="checkbox" v-model="formData.is_shared" />
-                            </div>
-                        </div>
-                        <InputLabel class="mt-4">Type:</InputLabel>
-                        <select v-model="formData.room_type_id"
-                            class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                            <option value="">select room type...</option>
-                            <option v-for="type in props.roomTypes" :key="type.id" :value="type.id">{{ type.name }}
-                            </option>
-                        </select>
-                        <InputLabel class="mt-4">Rate:</InputLabel>
-                        <select v-model="formData.rate_id"
-                            class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                            <option value="">select rate...</option>
-                            <option v-for="rate in props.rates" :key="rate.id" :value="rate.id">{{ rate.price_per_night
-                                }}
-                            </option>
-                        </select>
                         <div class="flex justify-end mt-4">
                             <div class="flex space-x-2">
                                 <PrimaryButton>Create</PrimaryButton>
@@ -137,10 +96,7 @@ const formFields = [
 const formData = useForm({
     room_number: '',
     is_occupied: 0,
-    room_type_id: '',
-    rate_id: '',
     maximum_capacity: '',
-    is_shared: 0,
     status: 'Available'
 })
 const closeModal = () => {
@@ -151,8 +107,7 @@ const closeModal = () => {
 const columns = ref([
     { label: 'ID', key: 'id' },
     { label: 'ROOM NUMBER', key: 'room_number' },
-    { label: 'ROOM TYPE', key: 'types.name' },
-    { label: 'RATE', key: 'rates.price_per_night' },
+    { label: 'CAPACITY', key: 'maximum_capacity' },
     { label: 'STATUS', key: 'status' },
 ])
 const props = defineProps({
@@ -180,13 +135,12 @@ const handleSubmit = async () => {
     }
 }
 const handleUpdate = async () => {
-    const result = await updateItem(`rooms/${itemId.value}`, formData)
+    const result = await updateItem(`/room_update_via_form/${itemId.value}`, formData)
     if (result.success) {
         router.get(route('rooms.index'), {
             preserveState: true,
             preserveScroll: true
         })
-        console.log("update success")
     } else {
         router.get(route('rooms.index'), {
             preserveState: true,
@@ -201,11 +155,7 @@ const editData = async (id) => {
     console.log(result)
     if (result.success) {
         formData.room_number = result.data.room_number
-        formData.is_occupied = result.data.is_occupied
-        formData.room_type_id = result.data.types.id
-        formData.rate_id = result.data.rates.id
         formData.maximum_capacity = result.data.maximum_capacity
-        formData.is_shared = result.data.is_shared
         formData.status = result.data.status
         showModalEdit.value = true
     } else {

@@ -28,9 +28,13 @@ use App\Http\Controllers\AddMotelUserController;
 use App\Http\Controllers\ReCheckInUploadContoller;
 use App\Http\Controllers\RoomRepairController;
 use App\Http\Controllers\UploadVoucherController;
+use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Middlewares\PermissionMiddleware;
 
 Route::get('/', function () {
+    if(Auth::check()){
+        return redirect()->route('user.home');
+    }
     return Inertia::render('Auth/Login');
 });
 
@@ -60,6 +64,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('/rates', RateController::class)->except('create','edit');
     Route::resource('/rooms', RoomController::class)->except('create','edit');
+    Route::patch('/room_update_via_form/{room}', [RoomController::class,'updateViaForm'])->name('room.update.via.form');
     Route::post('/rooms/repair',[RoomController::class,'repair'])->name('room.repair');
     Route::resource('/vouchers', VoucherController::class)->except('edit');
 

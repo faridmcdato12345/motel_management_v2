@@ -25,8 +25,8 @@ class StoreRoomRequest extends FormRequest
     {
         return [
             'room_number' => 'required',
-            'rate_id' => 'required',
-            'room_type_id'=> 'required',
+            'rate_id' => 'nullable',
+            'room_type_id'=> 'nullable',
             'motel_id' => 'nullable',
             'is_occupied' => 'nullable',
             'status' => 'nullable',

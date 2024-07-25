@@ -97,11 +97,11 @@
                         </div>
                         <button class="w-full bg-green-500 p-4 rounded-md  mt-4" v-if="checkOutStatus"
                             @click.prevent="checkIn">Re-check In</button>
-                        <button class="w-full bg-sky-500 p-4 rounded-md  mt-4" v-if="checkOutStatus"
-                            @click.prevent="backToService">Available</button>
+                        <button class="w-full bg-green-500 p-4 rounded-md text-white mt-4"
+                            @click.prevent="showModalCheckOutConfirm">Check Out</button>
                         <div v-if="inUseStatus">
                             <button class="w-full bg-green-500 p-4 rounded-md text-white mt-4"
-                                @click.prevent="checkOut">Check Out</button>
+                                @click.prevent="showModalCheckOutConfirm">Check Out</button>
                             <button class="w-full bg-green-500 p-4 rounded-md  mt-4"
                                 @click.prevent="recheckInCheckedIn">Re-check
                                 In</button>
@@ -138,6 +138,24 @@
                 </div>
             </div>
         </Modal>
+        <Modal :show="modalCheckOut">
+            <div class="p-4">
+                <div>
+                    <form @submit.prevent="">
+                        <div class="border-dashed border-gray-600 border-2 p-4">
+                            <div class="space-y-2 mb-4">
+                                <p class="text-md font-black">Check out date</p>
+                                <input type="date" v-model="checkOutDate" class="w-full">
+                            </div>
+                        </div>
+                    </form>
+                    <button class="w-full bg-green-400 p-4 rounded-md text-white mt-4"
+                        @click.prevent="checkOut">Submit</button>
+                    <button class="w-full bg-red-400 p-4 rounded-md text-white mt-4"
+                        @click.prevent="modalCheckOut = false">Cancel</button>
+                </div>
+            </div>
+        </Modal>
     </div>
 </template>
 
@@ -151,11 +169,13 @@ import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
 import { onMounted } from "vue";
 
+const modalCheckOut = ref(false)
 const modalShow = ref(false)
 const checkoutdate = ref('')
 const voucherStatus = ref('')
 const checkOutStatus = ref(false)
 const availableStatus = ref(false)
+const checkOutDate = ref('')
 const roomId = ref('')
 const modalRepairShow = ref(false)
 const repairDate = ref();
@@ -222,6 +242,11 @@ const props = defineProps({
     placeholder: String
 })
 const expandedRows = ref({});
+
+const showModalCheckOutConfirm = () => {
+    modalCheckOut.value = true
+}
+
 const roomRepairStart = (result) => {
     const start = Object.keys(result).map(key => {
         return result[key].start_of_repair
@@ -360,7 +385,8 @@ const backToService = async () => {
 const checkOut = () => {
     inUseStatus.value = false
     const formData = useForm({
-        status: 'Checked Out'
+        status: 'Available',
+        manual_check_out: checkOutDate.value
     })
     formData.patch(route('rooms.update', roomId.value), formData, {
         preserveState: false

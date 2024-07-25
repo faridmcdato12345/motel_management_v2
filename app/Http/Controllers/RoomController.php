@@ -83,16 +83,14 @@ class RoomController extends Controller
     public function update(Request $request, Room $room)
     {
         try {
-            $date = Carbon::now(env('TIMEZONE'));
-            $now = Carbon::parse($date)->format('Y-m-d');
             DB::beginTransaction();
             $room->update($request->all());
             $bookings = Booking::where('room_id',$room->id)->where('status','checked_in')->get();
             foreach ($bookings as $booking) {
-                if($booking->check_out_date !== $now){
-                    $booking->update(['manual_check_out' => $now, 'status' => 'checked_out']);
-                }else{
-                    $booking->update(['status' => 'checked_out']);
+                if($booking->check_out_date !== $request->manual_check_out){
+                    $booking->update(['manual_check_out' => $request->manual_check_out, 'status' => 'checked_out']);
+                }else{ 
+                    $booking->update(['status' => 'checked_out', 'manual_check_out' => $request->manual_check_out]);
                 }
             }
             DB::commit();
@@ -148,5 +146,10 @@ class RoomController extends Controller
             DB::rollBack();
             return response()->json($e->getMessage());
         }
+    }
+    public function updateViaForm(Request $request, Room $room)
+    {
+        $room->update($request->all());
+        return back();
     }
 }
