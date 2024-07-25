@@ -250,6 +250,9 @@ const availabilityDate = (result) => {
 }
 const checkOutDetail = (result) => {
     const newdata = Object.keys(result).map(key => {
+        if (result[key].manual_check_out) {
+            return result[key].manual_check_out
+        }
         return result[key].check_out_date
     })
     const formatedDate = new Date(newdata.toString())
@@ -266,6 +269,9 @@ const checkInDetail = (result) => {
 }
 const voucherStatusDetail = (result) => {
     const newdata = Object.keys(result).map(key => {
+        if (result[key].manual_check_out) {
+            return result[key].manual_check_out
+        }
         return result[key].check_out_date
     })
     const currentDate = new Date()

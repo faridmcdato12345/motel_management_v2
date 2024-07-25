@@ -18,7 +18,8 @@ class Booking extends Model
         'check_in_date',
         'check_out_date',
         'total_price',
-        'status'
+        'status',
+        'manual_check_out'
     ];
 
     public function rooms(): BelongsTo

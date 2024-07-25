@@ -83,9 +83,18 @@ class RoomController extends Controller
     public function update(Request $request, Room $room)
     {
         try {
+            $date = Carbon::now(env('TIMEZONE'));
+            $now = Carbon::parse($date)->format('Y-m-d');
             DB::beginTransaction();
             $room->update($request->all());
-            auth()->user()->repair_rooms()->where('room_id',$room->id)->where('status','ONGOING')->update(['status' => 'DONE']);
+            $bookings = Booking::where('room_id',$room->id)->where('status','checked_in')->get();
+            foreach ($bookings as $booking) {
+                if($booking->check_out_date !== $now){
+                    $booking->update(['manual_check_out' => $now, 'status' => 'checked_out']);
+                }else{
+                    $booking->update(['status' => 'checked_out']);
+                }
+            }
             DB::commit();
             return back();
         } catch (\Exception $e) {
