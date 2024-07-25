@@ -97,7 +97,7 @@
                         </div>
                         <button class="w-full bg-green-500 p-4 rounded-md  mt-4" v-if="checkOutStatus"
                             @click.prevent="checkIn">Re-check In</button>
-                        <button class="w-full bg-green-500 p-4 rounded-md text-white mt-4"
+                        <button class="w-full bg-green-500 p-4 rounded-md text-white mt-4" v-if="inUseStatus"
                             @click.prevent="showModalCheckOutConfirm">Check Out</button>
                         <div v-if="inUseStatus">
                             <button class="w-full bg-green-500 p-4 rounded-md text-white mt-4"
@@ -106,7 +106,6 @@
                                 @click.prevent="recheckInCheckedIn">Re-check
                                 In</button>
                         </div>
-
                         <button class="w-full bg-green-500 p-4 rounded-md text-white mt-4" v-if="outOfServiceStatus"
                             @click.prevent="backToService">Back to Service</button>
                         <button class="w-full bg-red-400 p-4 rounded-md text-white mt-4"
@@ -389,7 +388,10 @@ const checkOut = () => {
         manual_check_out: checkOutDate.value
     })
     formData.patch(route('rooms.update', roomId.value), formData, {
-        preserveState: false
+        preserveState: false,
+        onSuccess: () => {
+            modalCheckOut.value = false
+        }
     })
 
 }
