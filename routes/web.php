@@ -25,6 +25,7 @@ use App\Http\Controllers\RoomTypeController;
 use App\Http\Controllers\GuestTypeController;
 use App\Http\Controllers\RapairRoomController;
 use App\Http\Controllers\AddMotelUserController;
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ReCheckInUploadContoller;
 use App\Http\Controllers\RoomRepairController;
 use App\Http\Controllers\UploadVoucherController;
@@ -60,13 +61,15 @@ Route::middleware('auth')->group(function () {
         Route::patch('/all/vouchers/{voucher}',[VoucherController::class,'update'])->name('all.voucher.update');
         Route::resource('/roles', RoleController::class);
     });
+    Route::get('/room_voucher_details/{room}',[RoomController::class,'roomVoucherDetails'])->name('room.bookings.details');
     Route::resource('/guest', GuestController::class)->except('create','edit');
-
+    Route::resource('/bookings', BookingController::class);
     Route::resource('/rates', RateController::class)->except('create','edit');
     Route::resource('/rooms', RoomController::class)->except('create','edit');
     Route::patch('/room_update_via_form/{room}', [RoomController::class,'updateViaForm'])->name('room.update.via.form');
     Route::post('/rooms/repair',[RoomController::class,'repair'])->name('room.repair');
     Route::resource('/vouchers', VoucherController::class)->except('edit');
+    Route::get('/rooms_available',[RoomController::class,'availableRooms'])->name('rooms.available');
 
     Route::get('/home',[HomeController::class,'index'])->name('home.index');
 
@@ -83,13 +86,10 @@ Route::middleware('auth')->group(function () {
 
     Route::patch('/re_check_in/upload/{room}',[ReCheckInUploadContoller::class,'update'])->name('re_check_in.upload');
     Route::get('/re_check_in/upload/{room}',[ReCheckInUploadContoller::class,'index'])->name('re_check_in.upload.index');
+    
 });
 Route::get('/test',function() {
-    $now = Carbon::now(env('TIMEZONE'))->format('Y-m-d');
-    dd($now);
-    $bookings = Booking::whereDate('check_out_date',$now)->get();
-    foreach ($bookings as $book) {
-        Room::where('id',$book->room_id)->where('user_id',1)->update(['status' => 'Checked Out']);
-    }
+    $items = config('rate.key');
+    dd($items);
 });
 require __DIR__.'/auth.php';

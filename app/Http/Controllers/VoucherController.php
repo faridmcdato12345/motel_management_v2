@@ -24,7 +24,11 @@ class VoucherController extends Controller
             $query->where('case_number','like','%' . $request->query('case_number') . '%');
         }
         $limit = $request->has('query') ? $request->query('query'): 5;
-        $vouchers = $query->paginate(intval($limit))->withQueryString();
+        if(auth()->user()->hasRole('Super Admin')){
+             $vouchers = $query->paginate(intval($limit))->withQueryString();
+        }else{
+            $vouchers = $query->where('user_id',auth()->user()->id)->paginate(intval($limit))->withQueryString();
+        }
         return inertia('Voucher/Index',[
             'queryLimit' => intval($limit),
             'queryName' => $request->has('name') ? $request->query('name') : null,
@@ -107,7 +111,6 @@ class VoucherController extends Controller
                 $nameParts = explode(' ',$request->clients[0]);
                 $guest = Guest::create([
                     'user_id' => auth()->user()->id,
-                    'type_id' => $request->type[0],
                     'first_name' => $nameParts[0],
                     'last_name' => $nameParts[1]
                 ]);
@@ -119,7 +122,8 @@ class VoucherController extends Controller
                     'amount' => $request->total,
                     'self_pay' => $request->contribution,
                     'path' => $request->image_path,
-                    'motel_id' => $motelId->id
+                    'motel_id' => $motelId->id,
+                    'rate_amount' => $request->rate_amount[0]
                 ]);
                 Booking::create([
                     'room_id' => $room->id,
@@ -129,7 +133,26 @@ class VoucherController extends Controller
                     'total_price' => $request->total_amount,
                     'status' => 'checked_in'
                 ]);
-                Room::where('user_id',auth()->user()->id)->where('id',$room->id)->update(['is_occupied' => 1,'status' => 'In Use']);
+                if($request->added_room){
+                    Booking::create([
+                        'room_id' => $request->added_room,
+                        'guest_id' => $guest->id,
+                        'check_in_date' => $request->check_in,
+                        'check_out_date' => $request->check_out,
+                        'total_price' => $request->total_amount,
+                        'status' => 'checked_in'
+                    ]);
+                    Room::where('user_id',auth()->user()->id)->where('id',$request->added_room)->update(['is_occupied' => 1,'status' => 'In Use']);
+                }
+                $rooms = Room::where('user_id',auth()->user()->id)->where('id',$room->id)->get();
+                foreach($rooms as $room)
+                {
+                    if($room->maximum_capacity >= $room->capacity_status){
+                        $room->capacity_status += 1;
+                        $room->status = 'In Use';
+                        $room->save();
+                    }
+                }
             }else if(count($request->clients ) > 1){
                 for($i = 0; $i < count($request->clients); $i++){
                     $nameParts = explode(' ',$request->clients[$i]);
@@ -147,7 +170,8 @@ class VoucherController extends Controller
                         'amount' => $request->total,
                         'self_pay' => $request->contribution,
                         'path' => $request->image_path,
-                        'motel_id' => $motelId->id
+                        'motel_id' => $motelId->id,
+                        'rate_amount' => $request->rate_amount[$i]
                     ]);
                     Booking::create([
                         'room_id' => $room->id,

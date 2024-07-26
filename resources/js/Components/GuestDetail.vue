@@ -10,7 +10,8 @@
         </div>
         <div class="form" v-else>
             <FormSection :modelValue="gptData" :is-multi-client="isMultiClient" :clients="props.gptData.clients"
-                @update:modelValue="value => updateFormSection(value)" :guest-types="guestTypes" />
+                @update:modelValue="value => updateFormSection(value)" :guest-types="guestTypes"
+                :available-rooms="roomsAvailable" @update:selectedOption="handleSelectedOption" />
         </div>
         <div class="flex justify-between mt-4 space-x-4">
             <div v-if="step > 0" class="flex justify-center w-full bg-red-800 rounded-md">
@@ -48,6 +49,8 @@ const props = defineProps({
 })
 const isMultiClient = ref(false)
 const isMultiForm = ref(false)
+const roomsAvailable = ref({})
+const addedRoom = ref('')
 const emit = defineEmits(['update:gptData', 'compiledData']);
 
 const formData = useForm({
@@ -55,8 +58,16 @@ const formData = useForm({
     days: props.gptData.days,
     amount: props.gptData.amount,
     self_pay: props.gptData.contribution,
-    guest_name: props.gptData.clients
+    guest_name: props.gptData.clients,
+    room_number: '',
+
 })
+const handleSelectedOption = (selectedValue) => {
+    console.log('Selected option:', selectedValue);
+    addedRoom.value = selectedValue
+    props.gptData.added_room = selectedValue
+    console.log("'handleSelectedOption':", props.gptData)
+};
 const step = ref(0)
 const nextStep = async () => {
     if (step.value == props.gptData.length - 1) {
@@ -111,15 +122,20 @@ const updateFormSection = (value, index) => {
 const compileAllData = () => {
     emit('compiledData', props.gptData);
 };
+
+const getAvailableRooms = async () => {
+    const result = await axios.get(route('rooms.available')).then((response) => {
+        roomsAvailable.value = response.data
+    })
+}
 onMounted(() => {
     console.log("roomNumbers guestde: ", props.roomNumbers)
     if (props.gptData.length > 1) {
         isMultiForm.value = true
-        console.log("isMultiForm")
     } else if (props.gptData.clients.length > 1) {
         isMultiClient.value = true
-        console.log("isMultiClient")
     }
+    getAvailableRooms()
 })
 </script>
 

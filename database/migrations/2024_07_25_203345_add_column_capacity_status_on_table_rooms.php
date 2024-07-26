@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('rooms', function (Blueprint $table) {
-            $table->enum('status',['Available','In Use','Out of Service','Shared','Checked Out','Recheck In']);
+            $table->integer('capacity_status')->default(0)->nullable();
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('rooms', function (Blueprint $table) {
-            $table->dropColumn('status');
+            $table->dropColumn('capacity_status');
         });
     }
 };

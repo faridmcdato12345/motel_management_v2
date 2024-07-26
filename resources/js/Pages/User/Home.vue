@@ -49,7 +49,7 @@ const motelId = ref('')
 const next = ref(false)
 const recheckIn = ref(false)
 const columns = ref([
-    { label: 'ROOM #', key: 'room_number' },
+    { label: 'ROOM #', key: 'room_number' }
 ])
 const props = defineProps({
     rooms: {

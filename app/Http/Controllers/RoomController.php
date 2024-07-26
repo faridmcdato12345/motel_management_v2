@@ -152,4 +152,21 @@ class RoomController extends Controller
         $room->update($request->all());
         return back();
     }
+
+    public function availableRooms()
+    {
+        return response()->json(Room::where('status','Available')
+        ->where('user_id',auth()->user()->id)
+        ->whereColumn('capacity_status','!=','maximum_capacity')
+        ->orderBy('room_number','asc')->get());
+    }
+
+    public function roomVoucherDetails(Room $room)
+    {
+        $bookings = Booking::where('room_id',$room->id)
+                            ->where('status','checked_in')
+                            ->whereNull('manual_check_out')
+                            ->get();
+        return response()->json($bookings);
+    }
 }

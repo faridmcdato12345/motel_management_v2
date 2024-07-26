@@ -19,7 +19,8 @@ class Room extends Model
         'user_id',
         'status',
         'maximum_capacity',
-        'is_shared'
+        'is_shared',
+        'capacity_status'
     ];
 
     protected $with = ['users','types','rates'];

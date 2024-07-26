@@ -81,7 +81,7 @@ class UserController extends Controller
             'roles' => auth()->user()->getRoleNames(),
             'permissions' => auth()->user()->getAllPermissions()->pluck('name'),
             'rooms' => Room::with(['bookings' => function ($query) use ($now){
-                $query->orderBy('id','desc')->limit(1);
+                $query->where('status','checked_in')->orderBy('id','desc')->limit(1);
             },'room_repairs' => function($query){
                 $query->where('status','ONGOING');
             }])->where('user_id',auth()->user()->id)->orderBy('room_number','asc')->get(),

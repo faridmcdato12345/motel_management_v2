@@ -18,7 +18,8 @@ class Voucher extends Model
         'amount',
         'self_pay',
         'path',
-        'motel_id'
+        'motel_id',
+        'rate_amount',
     ];
     public function users(): BelongsTo
     {

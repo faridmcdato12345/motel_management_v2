@@ -16,14 +16,16 @@ class Gpt4VisionService
     protected $client;
     protected $apiKey;
     protected $days;
+    protected $rates;
     /**
      * Create a new class instance.
      */
-    public function __construct(GetDaysService $days)
+    public function __construct(GetDaysService $days, RoomRateService $rate)
     {
         $this->client = new Client();
         $this->apiKey = env('OPENAI_API_KEY');
         $this->days = $days;
+        $this->rates = $rate;
     }
 
     public function analyzeImage($imagePath,$fullPath)
@@ -142,7 +144,8 @@ class Gpt4VisionService
                     'room_number' => '',
                     'check_out' => $data['check_out'] ? $this->formatDate($data['check_out']): '',
                     'room_type' => '',
-                    'image_path' => $fullPath
+                    'image_path' => $fullPath,
+                    'rate_amount' => $this->rates->getRate(1,$this->days->numberOfDays($data['dates']),"shared")
                 ];
         } catch(Exception $e) {
            return response()->json(['error' => $e->getMessage()], 500);

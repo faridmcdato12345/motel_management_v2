@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Room;
 use App\Models\Booking;
 use Illuminate\Http\Request;
 
@@ -53,6 +54,7 @@ class BookingController extends Controller
     public function update(Request $request, Booking $booking)
     {
         $booking->update($request->all());
+        Room::where('id',$request->room_id)->decrement('capacity_status',1);
         return back();
     }
 

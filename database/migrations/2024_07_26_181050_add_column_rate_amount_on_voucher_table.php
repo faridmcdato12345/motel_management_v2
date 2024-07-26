@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('rooms', function (Blueprint $table) {
-            $table->enum('status',['Available','In Use','Out of Service','Shared','Checked Out','Recheck In']);
+        Schema::table('vouchers', function (Blueprint $table) {
+            $table->decimal('rate_amount',8,2)->nullable()->default(null);
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('rooms', function (Blueprint $table) {
-            $table->dropColumn('status');
+        Schema::table('vouchers', function (Blueprint $table) {
+            $table->dropColumn('rate_amount');
         });
     }
 };

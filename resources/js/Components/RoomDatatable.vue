@@ -8,6 +8,12 @@
                     <div class="h-full min-h-32 max-h-40">
                         <div class="relative">
                             <p class="font-black text-md md:text-4xl">{{ getNestedValue(item, column.key) }}</p>
+                            <div class="absolute top-0 right-0 text-[0.70rem]">
+                                <span></span>
+                                <span>{{ item.capacity_status }}</span>
+                                <span>/</span>
+                                <span>{{ item.maximum_capacity }}</span>
+                            </div>
                             <div class="h-full flex flex-col items-left space-y-2 justify-center max-h-40 mt-2 md:mt-2"
                                 v-if="item.status === 'Out of Service'">
                                 <div class="text-xxs md:text-xs flex font-black space-x-2  p-1 rounded-full items-center"
@@ -46,21 +52,30 @@
                             </div>
                             <div class="h-full flex flex-col items-left space-y-2 justify-center max-h-32 mt-2 md:mt-2"
                                 v-if="item.status === 'In Use'">
-                                <div class="text-xxs md:text-xs flex font-black space-x-2  p-1 rounded-full"
-                                    :class="detailButton(item.status)">
-                                    <label for="">Check-in Date:</label>
-                                    <p>{{ checkInDetail(item.bookings) }}</p>
+                                <div v-if="item.capacity_status > 1" @click.stop="showMore(item)">
+                                    <div class="text-xxs md:text-xs flex font-black space-x-2  p-1 rounded-full justify-center "
+                                        :class="detailButton(item.status)">
+                                        <p>show more</p>
+                                    </div>
                                 </div>
-                                <div class="text-xxs md:text-xs font-black flex space-x-2 p-1 rounded-full"
-                                    :class="detailButton(item.status)">
-                                    <label for="">Check-out Date:</label>
-                                    <p>{{ checkOutDetail(item.bookings) }}</p>
+                                <div class="flex flex-col space-y-1" v-else>
+                                    <div class="text-xxs md:text-xs flex font-black space-x-2  p-1 rounded-full"
+                                        :class="detailButton(item.status)">
+                                        <label for="">Check-in Date:</label>
+                                        <p>{{ checkInDetail(item.bookings) }}</p>
+                                    </div>
+                                    <div class="text-xxs md:text-xs font-black flex space-x-2 p-1 rounded-full"
+                                        :class="detailButton(item.status)">
+                                        <label for="">Check-out Date:</label>
+                                        <p>{{ checkOutDetail(item.bookings) }}</p>
+                                    </div>
+                                    <div class="text-xxs md:text-xs font-black flex space-x-2 p-1 rounded-full"
+                                        :class="detailButton(item.status)">
+                                        <label for="">Voucher Status:</label>
+                                        <p>{{ voucherStatusDetail(item.bookings) }}</p>
+                                    </div>
                                 </div>
-                                <div class="text-xxs md:text-xs font-black flex space-x-2 p-1 rounded-full"
-                                    :class="detailButton(item.status)">
-                                    <label for="">Voucher Status:</label>
-                                    <p>{{ voucherStatusDetail(item.bookings) }}</p>
-                                </div>
+
                             </div>
                             <div class="h-full flex flex-col items-left space-y-2 justify-center max-h-32 mt-2 md:mt-2"
                                 v-if="item.status === 'Shared'">
@@ -95,11 +110,15 @@
                             <button class="w-full bg-gray-500 p-4 rounded-md text-white mt-4"
                                 @click.prevent="repair">Repair</button>
                         </div>
-                        <button class="w-full bg-green-500 p-4 rounded-md  mt-4" v-if="checkOutStatus"
-                            @click.prevent="checkIn">Re-check In</button>
-                        <button class="w-full bg-green-500 p-4 rounded-md text-white mt-4" v-if="inUseStatus"
-                            @click.prevent="showModalCheckOutConfirm">Check Out</button>
+                        <div v-if="checkOutStatus">
+                            <button class="w-full bg-green-500 p-4 rounded-md  mt-4" @click.prevent="checkIn">Re-check
+                                In</button>
+                            <button class="w-full bg-green-500 p-4 rounded-md text-white mt-4"
+                                @click.prevent="showModalCheckOutConfirm">Check Out</button>
+                        </div>
                         <div v-if="inUseStatus">
+                            <button class="w-full bg-green-500 p-4 rounded-md text-white mt-4"
+                                @click.prevent="checkIn">Check In</button>
                             <button class="w-full bg-green-500 p-4 rounded-md text-white mt-4"
                                 @click.prevent="showModalCheckOutConfirm">Check Out</button>
                             <button class="w-full bg-green-500 p-4 rounded-md  mt-4"
@@ -155,18 +174,41 @@
                 </div>
             </div>
         </Modal>
+        <Modal :show="modalFull">
+            <div class="p-4">
+                <div>
+                    <p>THE ROOM REACH ITS MAXIMUM CAPACITY</p>
+                    <p>Please choose another room</p>
+                </div>
+                <button class="w-full bg-green-400 p-4 rounded-md text-white mt-4"
+                    @click.prevent="modalFull = false">Ok</button>
+            </div>
+        </Modal>
+        <Modal :show="modalIsSharable">
+            <div class="p-4">
+                <div>
+                    <p>Are you sure the guest wants a sharable room?</p>
+                </div>
+                <button class="w-full bg-green-400 p-4 rounded-md text-white mt-4"
+                    @click.prevent="showIsSharable">Yes</button>
+                <button class="w-full bg-rose-400 p-4 rounded-md text-white mt-4"
+                    @click.prevent="modalIsSharable = false">No</button>
+            </div>
+        </Modal>
+        <ShowMore :modal-is-sharable="showMoreModal" :room="roomId" :room-booking-details="roomBookingDetails"
+            @recheck-in="recheckInCheckedIn" @close-show-more="showMoreModal = false" />
     </div>
 </template>
 
 <script setup>
+import ShowMore from "./ShowMore.vue";
 import Modal from "@/Components/Modal.vue";
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { getNestedValue } from '@/util';
 import useData from '@/Composables/useData'
 import { useForm } from '@inertiajs/vue3';
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
-import { onMounted } from "vue";
 
 const modalCheckOut = ref(false)
 const modalShow = ref(false)
@@ -180,7 +222,11 @@ const modalRepairShow = ref(false)
 const repairDate = ref();
 const availableDate = ref()
 const inUseStatus = ref()
+const modalFull = ref(false)
+const showMoreModal = ref(false)
 const outOfServiceStatus = ref(false)
+const modalIsSharable = ref(false)
+const roomBookingDetails = ref([])
 const { isLoading, error, storeItem, fetchItem, updateItem } = useData()
 
 const emit = defineEmits(['checkIn', 'recheckInCheckedIn'])
@@ -241,7 +287,10 @@ const props = defineProps({
     placeholder: String
 })
 const expandedRows = ref({});
-
+const showMore = (index) => {
+    roomId.value = index.id
+    showMoreModal.value = true
+}
 const showModalCheckOutConfirm = () => {
     modalCheckOut.value = true
 }
@@ -260,8 +309,6 @@ const roomRepairStart = (result) => {
 
 }
 const recheckInCheckedIn = () => {
-    console.log("recheckInCheckedIn")
-    console.log(roomId.value)
     emit('recheckInCheckedIn', roomId.value)
 }
 const availabilityDate = (result) => {
@@ -311,7 +358,6 @@ const voucherStatusDetail = (result) => {
     }
 }
 const saveRepair = () => {
-    console.log("save repair")
     const newFormData = useForm({
         start_of_repair: repairDate.value[0],
         end_of_repair: repairDate.value[1],
@@ -325,7 +371,7 @@ const saveRepair = () => {
             modalShow.value = false
             preserveState: true
         },
-        onError: (error) => { console.log(error) }
+        onError: (error) => { }
     })
 }
 const repair = () => {
@@ -340,29 +386,42 @@ const modalClose = () => {
     inUseStatus.value = false
     outOfServiceStatus.value = false
 }
+const showIsSharable = () => {
+    modalIsSharable.value = false
+    modalShow.value = true
+}
 const showModal = (index, status) => {
     roomId.value = index.id
-    modalShow.value = true
-    if (status === 'Checked Out') {
-        checkOutStatus.value = true
-        const currentDate = new Date()
-        const dueDate = new Date(index.bookings[0].check_out_date)
-        const startOfDayDueDate = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
-        const startOfDayCurrentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
-        const option = { year: 'numeric', month: 'long', day: 'numeric' };
-        checkoutdate.value = dueDate.toLocaleDateString('en-US', option)
-        if (startOfDayCurrentDate > startOfDayDueDate) {
-            voucherStatus.value = 'Overdue'
-        } else {
-            voucherStatus.value = 'Due'
-        }
-    } else if (status === 'Available') {
-        availableStatus.value = true
-    } else if (status === 'In Use' || status === 'Shared') {
+    if (index.maximum_capacity == index.capacity_status) {
+        modalFull.value = true
+    } else if (index.capacity_status != 0 && index.maximum_capacity != index.capacity_status) {
+        modalIsSharable.value = true
         inUseStatus.value = true
-    } else if (status === 'Out of Service') {
-        outOfServiceStatus.value = true
     }
+    else {
+        modalShow.value = true
+        if (status === 'Checked Out') {
+            checkOutStatus.value = true
+            const currentDate = new Date()
+            const dueDate = new Date(index.bookings[0].check_out_date)
+            const startOfDayDueDate = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
+            const startOfDayCurrentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
+            const option = { year: 'numeric', month: 'long', day: 'numeric' };
+            checkoutdate.value = dueDate.toLocaleDateString('en-US', option)
+            if (startOfDayCurrentDate > startOfDayDueDate) {
+                voucherStatus.value = 'Overdue'
+            } else {
+                voucherStatus.value = 'Due'
+            }
+        } else if (status === 'Available') {
+            availableStatus.value = true
+        } else if (status === 'In Use' || status === 'Shared') {
+            inUseStatus.value = true
+        } else if (status === 'Out of Service') {
+            outOfServiceStatus.value = true
+        }
+    }
+
 
 }
 
@@ -431,12 +490,16 @@ const detailButton = (status) => {
         'bg-blue-200': status === 'In Use',
     }
 }
-onMounted(() => {
-    console.log(props.data)
-    // const startDate = new Date();
-    // const endDate = new Date(new Date().setDate(startDate.getDate() + 7));
-    // repairDate.value = [startDate, endDate];
-    // availableDate.value = startDate
+watch(showMoreModal, (newValue) => {
+    if (newValue) {
+        axios.get(`/room_voucher_details/${roomId.value}`)
+            .then((response) => {
+                console.log(response)
+                roomBookingDetails.value = response.data
+                console.log("roomBookingDetails.value: ", roomBookingDetails.value)
+            })
+            .catch((error) => console.log(error))
+    }
 })
 </script>
 
