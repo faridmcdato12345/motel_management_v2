@@ -54,6 +54,10 @@ const hasPermission = (permission) => {
                                     :active="route().current('all.vouchers')">
                                     Vouchers
                                 </NavLink>
+                                <NavLink v-if="hasPermission('show motel')" :href="route('payments.index')"
+                                    :active="route().current('payments.index')">
+                                    Payments
+                                </NavLink>
                             </div>
                         </div>
                         <div class="flex items-center">
@@ -165,7 +169,10 @@ const hasPermission = (permission) => {
                             :active="route().current('all.vouchers')">
                             Vouchers
                         </ResponsiveNavLink>
-
+                        <ResponsiveNavLink v-if="hasPermission('show motel')" :href="route('payments.index')"
+                            :active="route().current('payments.index')">
+                            Payments
+                        </ResponsiveNavLink>
                     </div>
 
                     <!-- Responsive Settings Options -->

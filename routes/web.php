@@ -1,15 +1,7 @@
 <?php
-use Carbon\Carbon;
-use App\Models\Room;
-use App\Models\User;
 use Inertia\Inertia;
-use App\Models\Motel;
-
-use App\Models\Booking;
-use App\Models\GuestType;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Foundation\Application;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RateController;
 use App\Http\Controllers\RoleController;
@@ -19,18 +11,15 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\GuestController;
 use App\Http\Controllers\MotelController;
 use App\Http\Controllers\UploadController;
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VoucherController;
+use App\Http\Controllers\PaymentsController;
 use App\Http\Controllers\RoomTypeController;
 use App\Http\Controllers\GuestTypeController;
-use App\Http\Controllers\RapairRoomController;
 use App\Http\Controllers\AddMotelUserController;
-use App\Http\Controllers\BookingController;
-use App\Http\Controllers\ReCheckInUploadContoller;
-use App\Http\Controllers\RoomRepairController;
 use App\Http\Controllers\UploadVoucherController;
-use Illuminate\Support\Facades\Auth;
-use Spatie\Permission\Middlewares\PermissionMiddleware;
+use App\Http\Controllers\ReCheckInUploadContoller;
 
 Route::get('/', function () {
     if(Auth::check()){
@@ -60,6 +49,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/all/vouchers',[VoucherController::class,'all'])->name('all.vouchers');
         Route::patch('/all/vouchers/{voucher}',[VoucherController::class,'update'])->name('all.voucher.update');
         Route::resource('/roles', RoleController::class);
+        Route::resource('/payments', PaymentsController::class);
+        Route::patch('/update_voucher_amount/{voucher}',[BookingController::class,'updateVoucherAmount'])->name('update.voucher.amount');
+        Route::get('/search/voucher',[PaymentsController::class,'searchPa'])->name('search.case_number');
     });
     Route::get('/room_voucher_details/{room}',[RoomController::class,'roomVoucherDetails'])->name('room.bookings.details');
     Route::resource('/guest', GuestController::class)->except('create','edit');

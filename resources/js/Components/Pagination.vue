@@ -6,10 +6,10 @@
         :key="link.label"
         v-for="link in links" 
         v-html="link.label"
-        class="inline-block py-2 px-3 rounded-lg text-gray-200 text-xs"
+        class="inline-block py-2 px-3 rounded-lg text-gray-900 text-xs"
         :class="[
-            {'bg-gray-950': link.active},
-            [!link.url ? '!text-gray-500 cursor-not-allowed' : 'hover:bg-gray-950']
+            {'bg-gray-950 !text-gray-200': link.active},
+            [!link.url ? 'text-gray-500 cursor-not-allowed' : 'hover:bg-gray-950 hover:text-gray-200']
             ]" />
     </nav>
 </template>

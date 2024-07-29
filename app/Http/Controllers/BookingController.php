@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Room;
 use App\Models\Booking;
+use App\Models\Voucher;
 use Illuminate\Http\Request;
 
 class BookingController extends Controller
@@ -64,5 +65,12 @@ class BookingController extends Controller
     public function destroy(Booking $booking)
     {
         //
+    }
+
+    public function updateVoucherAmount(Voucher $voucher, Request $request)
+    {
+        $voucher->update($request->all());
+        return back();
+
     }
 }

@@ -16,6 +16,15 @@ class VoucherResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $balance = $this->amount;
+        
+        if($this->whenLoaded('payments')){
+            $totalPaid = $this->payments->sum('paid_amount');
+            $balance -= $totalPaid;
+        }else{
+            $balance = 0;
+        }
+
         return [
             'id' => $this->id,
             'guest' => new GuestResource($this->whenLoaded('guests')),
@@ -23,9 +32,12 @@ class VoucherResource extends JsonResource
             'days' => $this->days,
             'amount' => $this->amount,
             'self_pay' => $this->self_pay,
+            'rate_amount' => $this->rate_amount,
             'path' => $this->path,
             'created_at' =>  Carbon::parse($this->created_at)->isoFormat('MMMM D YYYY'),
-            'motel' => $this->whenLoaded('motels')
+            'motel' => $this->whenLoaded('motels'),
+            'payment' => $this->whenLoaded('payments'),
+            'balance' => $balance
         ];
     }
 }

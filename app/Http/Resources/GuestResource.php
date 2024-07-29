@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Booking;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -20,7 +21,8 @@ class GuestResource extends JsonResource
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
             'full_name' => $this->first_name .' '. $this->last_name,
-            'phone_number' => $this->phone_number ?? ''
+            'phone_number' => $this->phone_number ?? '',
+            'bookings' => Booking::where('guest_id',$this->id)->first()
         ];
     }
 }

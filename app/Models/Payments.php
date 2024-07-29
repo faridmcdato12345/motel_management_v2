@@ -11,14 +11,14 @@ class Payments extends Model
     use HasFactory;
 
     protected $fillable = [
-        'booking_id',
-        'amount',
-        'payment_method',
-        'payment_date'
+        'voucher_id',
+        'paid_amount',
+        'payment_date',
+        'status'
     ];
 
-    public function bookings(): BelongsTo
+    public function vouchers(): BelongsTo
     {
-        return $this->belongsTo(Booking::class);
+        return $this->belongsTo(Voucher::class);
     }
 }
