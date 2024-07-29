@@ -18,7 +18,7 @@ class VoucherResource extends JsonResource
     {
         $balance = $this->amount;
         
-        if($this->whenLoaded('payments')){
+        if($this->whenLoaded('payments') && $this->payments->isNotEmpty()){
             $totalPaid = $this->payments->sum('paid_amount');
             $balance -= $totalPaid;
         }else{

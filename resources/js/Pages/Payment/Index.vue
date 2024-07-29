@@ -44,8 +44,8 @@
                             <td>{{
                                 result.payment ? result.payment.status
                                     : "" }}</td>
-                            <td>{{ result.guest.bookings.check_in_date }}</td>
-                            <td>{{ result.guest.bookings.check_out_date }}</td>
+                            <td>{{ result.guest ? result.guest.bookings.check_in_date : '' }}</td>
+                            <td>{{ result.guest ? result.guest.bookings.check_out_date : '' }}</td>
                             <td><button class="bg-sky-200 p-4 rounded-md" @click.prevent="addPayment(result.id)">Add
                                     Payment</button></td>
                         </tr>
