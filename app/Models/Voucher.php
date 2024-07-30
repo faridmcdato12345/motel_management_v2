@@ -38,8 +38,8 @@ class Voucher extends Model
         return $this->belongsTo(Motel::class,'motel_id','id','motels');
     }
 
-    public function payments(): HasOne
+    public function payments(): HasMany
     {
-        return $this->hasOne(Payments::class);
+        return $this->hasMany(Payments::class);
     }
 }

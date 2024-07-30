@@ -65,7 +65,6 @@ const canvas = ref(null);
 const emit = defineEmits(['openAiResponse', 'updateData'])
 
 const getOpenAiResponse = (response) => {
-    console.log("updated data: ", response)
     emit('openAiResponse', response)
 }
 const toggleCamera = () => {
@@ -82,7 +81,11 @@ const toggleCamera = () => {
 const checkFacingModeSupport = () => {
     return new Promise((resolve) => {
         navigator.mediaDevices.getUserMedia({
-            video: { facingMode: 'environment' }
+            video: {
+                minAspectRatio: 1.333,
+                maxAspectRatio: 1.334,
+                facingMode: 'environment'
+            }
         })
             .then(() => resolve(true))
             .catch(() => resolve(false))
@@ -99,9 +102,12 @@ const createCameraElement = async () => {
     isLoading.value = true;
     const devices = await navigator.mediaDevices.enumerateDevices();
     const backCamera = devices.find(device => device.kind === 'videoinput' && device.label.toLowerCase().includes('back'));
-    console.log(backCamera)
     const constraints = {
         video: {
+            frameRate: {
+                ideal: 60,
+                max: 60
+            },
             facingMode: 'environment' // This should normally work
         }
     };

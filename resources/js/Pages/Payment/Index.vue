@@ -14,7 +14,7 @@
                         <th>CASE NUMBER</th>
                         <th>DAY/S</th>
                         <th>VOUCHER AMOUNT</th>
-                        <th>PAID AMOUNT</th>
+                        <th>PAID TOTAL AMOUNT</th>
                         <th>BALANCE</th>
                         <th>PAYMENT STATUS</th>
                         <th>CHECKED IN</th>
@@ -39,24 +39,20 @@
                                 </template>
                             </td>
 
-                            <td>{{ result.payment ? result.payment.paid_amount : 0 }}</td>
+                            <td>{{ result.payment ? totalAmountPaid(result) : 0 }}</td>
                             <td>{{ result.balance }}</td>
                             <td>{{
-                                result.payment ? result.payment.status
+                                result.payment ? result.payment[0].status
                                     : "" }}</td>
                             <td>{{ result.guest ? result.guest.bookings.check_in_date : '' }}</td>
                             <td>{{ result.guest ? result.guest.bookings.check_out_date : '' }}</td>
-                            <td><button class="bg-sky-200 p-4 rounded-md" @click.prevent="addPayment(result.id)">Add
+                            <td><button class="bg-sky-200 p-4 rounded-md" @click.prevent="addPayment(result.id)"
+                                    v-if="result.payment[0].status === 'Balance'">Add
                                     Payment</button></td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-
-            <!-- <PaymentsDataTable :data="props.vouchers.data" :columns="columns" :pagination="props.vouchers.meta"
-                @limit-query="limitQuery" @search-field-query="searchFieldQuery" @delete="deleteData" @edit="editData"
-                :query-limit="props.queryLimit" :route-create="createRoute" :query-name="props.queryName" :action="true"
-                :placeholder="'Search for case number'" @add-payment="addPayment" /> -->
         </div>
         <Modal :show="showModal" @close="showModal = false">
             <div class="p-4">
@@ -81,7 +77,6 @@ import TextInput from "@/Components/TextInput.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import DangerButton from "@/Components/DangerButton.vue";
 import Modal from "@/Components/Modal.vue";
-import PaymentsDataTable from "@/Components/PaymentsDataTable.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { ref, computed, onMounted, watch } from "vue"
 import { router, Head, useForm, usePage } from "@inertiajs/vue3";
@@ -139,11 +134,16 @@ const storePayment = () => {
         id: voucherId.value
     })
     newFormData.post(route('payments.store'), {
+        preserveState: true,
         onSuccess: () => {
 
         }
     })
+    result.payment.paid_amount = newFormData.payment
+    result.balance = result.amount - result.payment.paid_amount
+    result.payment.status = result.balance == 0 ? 'Paid' : 'Balance'
     showModal.value = false
+
 }
 const fetchSearchResults = async (query) => {
     if (query) {
@@ -175,18 +175,36 @@ const updateAmount = (result) => {
             amount: result.amount
         })
         formData.patch(route('update.voucher.amount', result.id), formData, {
-            preserveState: true,
+            preserveState: false,
             onSuccess: () => {
 
                 console.log("update success")
+
             }
+
         })
         result.isChecked = false
+        result.amount = formData.amount
+        result.balance = result.amount - result.payment.paid_amount
         console.log('Amount updated successfully');
     } catch (error) {
         console.error('Error updating amount:', error);
     }
 };
+const totalAmountPaid = (result) => {
+    console.log(result)
+    const totalPaidAmount = result.payment.reduce((acc, payment) => {
+        return acc + parseFloat(payment.paid_amount);
+    }, 0);
+
+    return totalPaidAmount
+}
+const totalStatus = (result) => {
+    const status = Object.keys(result).map(key => {
+        return result[key].payment.status
+    })
+    return status
+}
 const addPayment = (id) => {
     voucherId.value = id
     showModal.value = true

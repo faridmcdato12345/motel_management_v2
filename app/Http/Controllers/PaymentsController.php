@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\VoucherResource;
-use App\Models\Payments;
-use App\Models\Voucher;
 use Carbon\Carbon;
+use App\Models\Voucher;
+use App\Models\Payments;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Http\Resources\VoucherResource;
 
 class PaymentsController extends Controller
 {
@@ -61,14 +62,29 @@ class PaymentsController extends Controller
      */
     public function store(Request $request)
     {
-        $voucher = Voucher::select('id','amount')->where('id',$request->id)->first();
-        $payment = Payments::create([
-            'voucher_id' => $request->id,
-            'paid_amount' => $request->payment,
-            'payment_date' => Carbon::now('America/New_York'),
-            'status' => $voucher->amount > $request->payment ? 'Balance' : 'Paid',
-        ]);
-        return back();
+        DB::beginTransaction();
+        try {
+            $voucher = Voucher::select('id','amount')->where('id',$request->id)->first();
+            Payments::create([
+                'voucher_id' => $request->id,
+                'paid_amount' => $request->payment,
+                'payment_date' => Carbon::now('America/New_York'),
+                'status' => $voucher->amount > $request->payment ? 'Balance' : 'Paid',
+            ]);
+            $payments = Payments::where('voucher_id',$request->id)->where('status','Balance')->sum('paid_amount');
+            if($voucher->amount == $payments){
+                $queries = Payments::where('voucher_id',$request->id)->where('status','Balance')->get();
+                foreach ($queries as $query) {
+                    $query->update(['status' => 'Paid']);
+                }
+            }
+            DB::commit();
+            return back();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json($e->getMessage());
+        }
+        
     }
 
     /**

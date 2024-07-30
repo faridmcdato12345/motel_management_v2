@@ -1,5 +1,6 @@
 <?php
 use Inertia\Inertia;
+use App\Models\Payments;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
@@ -81,7 +82,7 @@ Route::middleware('auth')->group(function () {
     
 });
 Route::get('/test',function() {
-    $items = config('rate.key');
-    dd($items);
+    $payments = Payments::where('voucher_id',41)->where('status','Balance')->sum('paid_amount');
+    return $payments;
 });
 require __DIR__.'/auth.php';
