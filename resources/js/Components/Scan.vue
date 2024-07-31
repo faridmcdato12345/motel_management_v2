@@ -517,6 +517,7 @@ const initDDN = async () => {
     ddn = await Dynamsoft.DDN.DocumentNormalizer.createInstance();
     ddn.maxCvsSideLength = 9999;
 }
+const videoS = ref(false)
 onMounted(() => {
     initDDN()
     isCameraOpen.value = true;
@@ -524,9 +525,13 @@ onMounted(() => {
     registerEventsForCropper()
     if (camera.value) {
         camera.value.addEventListener('loadeddata', () => {
-            console.log("video started");
-            document.getElementsByClassName("overlay")[0].setAttribute("viewBox", "0 0 " + camera.videoWidth + " " + camera.videoHeight);
-            detect()
+            if (!videoS.value) {
+                console.log("video started");
+                document.getElementsByClassName("overlay")[0].setAttribute("viewBox", "0 0 " + camera.videoWidth + " " + camera.videoHeight);
+                detect()
+                videoS.value = true
+            }
+
         });
     }
 })
