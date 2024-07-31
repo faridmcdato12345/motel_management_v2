@@ -272,9 +272,9 @@ const loadPhotoToCropper = async (img) => {
     cropper.quad = detectedQuad.location;
 }
 const startDetecting = () => {
-    detecting = false;
+    detecting.value = false;
     stopDetecting();
-    interval = setInterval(detect, 300);
+    interval = setInterval(detect(), 300);
 }
 
 const stopDetecting = () => {
@@ -519,6 +519,7 @@ const initDDN = async () => {
 }
 const videoS = ref(false)
 onMounted(() => {
+
     initDDN()
     isCameraOpen.value = true;
     createCameraElement();
@@ -528,12 +529,13 @@ onMounted(() => {
             if (!videoS.value) {
                 console.log("video started");
                 document.getElementsByClassName("overlay")[0].setAttribute("viewBox", "0 0 " + camera.videoWidth + " " + camera.videoHeight);
-                detect()
+                startDetecting()
                 videoS.value = true
             }
 
         });
     }
+    console.log("hey")
 })
 </script>
 

@@ -5,6 +5,7 @@
         <div class="flex items-center justify-center h-screen md:content-area">
             <div class="w-full h-screen relative">
                 <Scan v-if="step == 1" @update-data="getOpenAiResponse" />
+                <!-- <ScanTwo v-if="step == 1" /> -->
                 <GuestDetail v-if="step == 2" :gptData="openAiData" @update:gptData="getUpdatedData"
                     :guest-types="guestTypes" :room="room" />
             </div>
@@ -13,6 +14,7 @@
 </template>
 
 <script setup>
+import ScanTwo from "@/Components/ScanTwo.vue";
 import GuestDetail from "@/Components/GuestDetail.vue"
 import Scan from "@/Components/Scan.vue"
 import NavBottom from "@/Components/NavBottom.vue"
