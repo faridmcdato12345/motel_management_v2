@@ -525,7 +525,7 @@ onMounted(() => {
     if (camera.value) {
         camera.value.addEventListener('loadeddata', () => {
             console.log("video started");
-            document.getElementsByClassName("overlay")[0].setAttribute("viewBox", "0 0 " + video.videoWidth + " " + video.videoHeight);
+            document.getElementsByClassName("overlay")[0].setAttribute("viewBox", "0 0 " + camera.videoWidth + " " + camera.videoHeight);
             detect()
         });
     }
