@@ -11,6 +11,11 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
         <!-- Scripts -->
+        <script src="https://cdn.jsdelivr.net/npm/dynamsoft-core@latest/dist/core.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/dynamsoft-utility@latest/dist/utility.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/dynamsoft-document-normalizer@1.0.12/dist/ddn.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/dynamsoft-capture-vision-router@latest/dist/cvr.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/dynamsoft-camera-enhancer@3.2.0/dist/dce.js"></script>
         @routes
         @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])
         @inertiaHead

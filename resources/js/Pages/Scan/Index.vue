@@ -1,17 +1,15 @@
 <template>
 
     <Head title="Scan" />
-    <AuthenticatedLayout>
-        <Transition appear>
-            <div class="flex items-center justify-center h-screen md:content-area">
-                <div class="w-full h-screen relative">
-                    <Scan v-if="step == 1" @update-data="getOpenAiResponse" />
-                    <GuestDetail v-if="step == 2" :gptData="openAiData" @update:gptData="getUpdatedData"
-                        :guest-types="guestTypes" :room="room" />
-                </div>
+    <Transition appear>
+        <div class="flex items-center justify-center h-screen md:content-area">
+            <div class="w-full h-screen relative">
+                <Scan v-if="step == 1" @update-data="getOpenAiResponse" />
+                <GuestDetail v-if="step == 2" :gptData="openAiData" @update:gptData="getUpdatedData"
+                    :guest-types="guestTypes" :room="room" />
             </div>
-        </Transition>
-    </AuthenticatedLayout>
+        </div>
+    </Transition>
 </template>
 
 <script setup>
