@@ -38,7 +38,7 @@
                     <button class="bg-blue-500 text-white px-4 py-2 rounded" v-else
                         @click.prevent="nextStep">Next</button>
                     <div class="autoCaptureButton">
-                        <img class="icon" src="assets/auto-photo.svg" alt="auto" />
+                        <img class="icon" src="" alt="auto" />
                     </div>
                 </div>
                 <div v-else>
@@ -54,10 +54,10 @@
                 </div>
                 <div class="toolbar">
                     <div class="rotateButton">
-                        <img class="icon" src="assets/rotate-counter-clockwise.svg" alt="rotate" />
+                        <img class="icon" src="" alt="rotate" />
                     </div>
                     <div class="filterButton">
-                        <img class="icon" src="assets/color-filter.svg" alt="color-filter" />
+                        <img class="icon" src="" alt="color-filter" />
                     </div>
                 </div>
                 <div class="filterList" style="display:none;">
@@ -76,10 +76,10 @@
                 </div>
                 <div class="okayCancelFooter">
                     <div class="resultViewerCancelButton cancel">
-                        <img class="icon" src="assets/cancel.svg" alt="cancel" />
+                        <img class="icon" src="" alt="cancel" />
                     </div>
                     <div class="resultViewerOkayButton okay">
-                        <img class="icon" src="assets/okay.svg" alt="okay" />
+                        <img class="icon" src="" alt="okay" />
                     </div>
                 </div>
             </div>
@@ -526,7 +526,7 @@ onMounted(() => {
         camera.value.addEventListener('loadeddata', () => {
             console.log("video started");
             document.getElementsByClassName("overlay")[0].setAttribute("viewBox", "0 0 " + video.videoWidth + " " + video.videoHeight);
-            startDetecting();
+            detect()
         });
     }
 })
