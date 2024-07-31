@@ -105,6 +105,8 @@ const doneTakePhoto = ref(false)
 const cameraDevices = ref([])
 const camera = ref(null);
 const canvas = ref(null);
+const previousResults = ref([]);
+const interval = ref('');
 let ddn = ref('')
 const detecting = ref(false)
 
@@ -165,13 +167,17 @@ const createCameraElement = async () => {
         .then((stream) => {
             isLoading.value = false;
             camera.value.srcObject = stream;
-            camera.width = 1280;
-            camera.height = 720;
         })
         .catch((error) => {
             isLoading.value = false;
             alert("May the browser didn't support or there is some errors.");
         });
+    const vid = document.querySelector('video');
+    vid.addEventListener('loadeddata', (event) => {
+        console.log("video started");
+        document.getElementsByClassName("overlay")[0].setAttribute("viewBox", "0 0 " + vid.videoWidth + " " + vid.videoHeight);
+        startDetecting();
+    });
 };
 
 const stopCameraStream = () => {
@@ -274,12 +280,12 @@ const loadPhotoToCropper = async (img) => {
 const startDetecting = () => {
     detecting.value = false;
     stopDetecting();
-    interval = setInterval(detect(), 300);
+    interval.value = setInterval(detect(), 300);
 }
 
 const stopDetecting = () => {
-    previousResults = [];
-    clearInterval(interval);
+    previousResults.value = [];
+    clearInterval(interval.value);
 }
 const detect = async () => {
     if (detecting.value === true) {
@@ -524,18 +530,12 @@ onMounted(() => {
     isCameraOpen.value = true;
     createCameraElement();
     registerEventsForCropper()
-    if (camera.value) {
-        camera.value.addEventListener('loadeddata', () => {
-            if (!videoS.value) {
-                console.log("video started");
-                document.getElementsByClassName("overlay")[0].setAttribute("viewBox", "0 0 " + camera.videoWidth + " " + camera.videoHeight);
-                startDetecting()
-                videoS.value = true
-            }
-
-        });
-    }
-    console.log("hey")
+    // const vid = document.querySelector('video');
+    // vid.addEventListener('loadeddata', (event) => {
+    //     console.log("video started");
+    //     document.getElementsByClassName("overlay")[0].setAttribute("viewBox", "0 0 " + vid.videoWidth + " " + vid.videoHeight);
+    //     startDetecting();
+    // });
 })
 </script>
 
