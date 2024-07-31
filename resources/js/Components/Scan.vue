@@ -107,7 +107,8 @@ const camera = ref(null);
 const canvas = ref(null);
 const previousResults = ref([]);
 const interval = ref('');
-let ddn = ref('')
+let vid
+let ddn
 const detecting = ref(false)
 
 const emit = defineEmits(['openAiResponse', 'updateData'])
@@ -172,7 +173,7 @@ const createCameraElement = async () => {
             isLoading.value = false;
             alert("May the browser didn't support or there is some errors.");
         });
-    const vid = document.querySelector('video');
+    vid = document.querySelector('video');
     vid.addEventListener('loadeddata', (event) => {
         console.log("video started");
         document.getElementsByClassName("overlay")[0].setAttribute("viewBox", "0 0 " + vid.videoWidth + " " + vid.videoHeight);
@@ -280,7 +281,7 @@ const loadPhotoToCropper = async (img) => {
 const startDetecting = () => {
     detecting.value = false;
     stopDetecting();
-    interval.value = setInterval(detect(), 300);
+    interval.value = setInterval(detect, 300);
 }
 
 const stopDetecting = () => {
@@ -474,20 +475,20 @@ const captureFullFrame = (img) => {
     img.src = cvs.toDataURL();
 }
 const captureFrame = (canvas, enableScale) => {
-    let w = video.videoWidth;
-    let h = video.videoHeight;
+    let w = vid.videoWidth;
+    let h = vid.videoHeight;
     let scaleDownRatio = 1;
     if (enableScale === true) {
         if (w > 2000 || h > 2000) {
             w = 1080;
-            h = w * (video.videoHeight / video.videoWidth);
-            scaleDownRatio = w / video.videoWidth;
+            h = w * (vid.videoHeight / vid.videoWidth);
+            scaleDownRatio = w / vid.videoWidth;
         }
     }
     canvas.width = w;
     canvas.height = h;
     let ctx = canvas.getContext('2d');
-    ctx.drawImage(video, 0, 0, w, h);
+    ctx.drawImage(vid, 0, 0, w, h);
     return scaleDownRatio;
 }
 const resetCropper = () => {
