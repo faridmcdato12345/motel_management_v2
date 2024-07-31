@@ -538,4 +538,11 @@ canvas {
     width: 100% !important;
     height: 100% !important;
 }
+
+.detectedPolygon {
+    stroke: green;
+    stroke-width: 2;
+    fill: lime;
+    opacity: 0.3;
+}
 </style>
