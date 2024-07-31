@@ -14,7 +14,7 @@
                 <video v-show="!isPhotoTaken" ref="camera" autoplay class="w-full"></video>
                 <canvas v-show="isPhotoTaken" id="photoTaken" ref="canvas"></canvas>
                 <canvas class="hiddenCVSForFrame" style="display:none"></canvas>
-                <svg class="overlay full" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                <svg class="overlay full absolute top-0" version="1.1" xmlns="http://www.w3.org/2000/svg">
                 </svg>
             </div>
             <!-- <div class="flex justify-center mt-4 space-x-2 bg-gray-300 rounded-lg" v-if="isCameraOpen">
@@ -526,17 +526,10 @@ const initDDN = async () => {
 }
 const videoS = ref(false)
 onMounted(() => {
-
     initDDN()
     isCameraOpen.value = true;
     createCameraElement();
     registerEventsForCropper()
-    // const vid = document.querySelector('video');
-    // vid.addEventListener('loadeddata', (event) => {
-    //     console.log("video started");
-    //     document.getElementsByClassName("overlay")[0].setAttribute("viewBox", "0 0 " + vid.videoWidth + " " + vid.videoHeight);
-    //     startDetecting();
-    // });
 })
 </script>
 
