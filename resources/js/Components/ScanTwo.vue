@@ -14,8 +14,6 @@
                 <video v-show="!isPhotoTaken" ref="camera" autoplay class="w-full"></video>
                 <canvas v-show="isPhotoTaken" id="photoTaken" ref="canvas"></canvas>
                 <canvas class="hiddenCVSForFrame" style="display:none"></canvas>
-                <svg class="overlay full" version="1.1" xmlns="http://www.w3.org/2000/svg">
-                </svg>
             </div>
             <!-- <div class="flex justify-center mt-4 space-x-2 bg-gray-300 rounded-lg" v-if="isCameraOpen">
                 <button class="px-4 py-2" :class="scanType === 'voucher' ? 'text-blue-600' : 'text-gray-600'"
@@ -37,9 +35,6 @@
                         @click.prevent="uploadPhoto">Done</button>
                     <button class="bg-blue-500 text-white px-4 py-2 rounded" v-else
                         @click.prevent="nextStep">Next</button>
-                    <div class="autoCaptureButton">
-                        <img class="icon" src="assets/auto-photo.svg" alt="auto" />
-                    </div>
                 </div>
                 <div v-else>
                     <Spinner />
@@ -106,7 +101,6 @@ const cameraDevices = ref([])
 const camera = ref(null);
 const canvas = ref(null);
 let ddn = ref('')
-const detecting = ref(false)
 
 const emit = defineEmits(['openAiResponse', 'updateData'])
 
@@ -221,8 +215,7 @@ const uploadPhoto = async () => {
     const canvasElement = document.getElementById('photoTaken');
     const dataURL = canvasElement.toDataURL('image/jpeg');
     const blob = dataURLtoBlob(dataURL);
-    capture()
-    //loadPhotoToCropper(blob)
+    loadPhotoToCropper(blob)
     // const formData = new FormData();
     // formData.append('image', blob, 'photo.jpg');
     // try {
@@ -270,68 +263,6 @@ const loadPhotoToCropper = async (img) => {
     }
     detectedQuad = quads[0];
     cropper.quad = detectedQuad.location;
-}
-const startDetecting = () => {
-    detecting = false;
-    stopDetecting();
-    interval = setInterval(detect, 300);
-}
-
-const stopDetecting = () => {
-    previousResults = [];
-    clearInterval(interval);
-}
-const detect = async () => {
-    if (detecting.value === true) {
-        return;
-    }
-    detecting.value = true;
-    let cvs = document.getElementsByClassName("hiddenCVSForFrame")[0];
-    let scaleDownRatio = captureFrame(cvs, true);
-    const quads = await ddn.detectQuad(cvs);
-    detecting.value = false;
-    let overlay = document.getElementsByClassName("overlay")[0];
-    if (quads.length > 0) {
-        let quad = quads[0];
-        console.log(quad);
-        if (scaleDownRatio != 1) {
-            scaleQuad(quad, scaleDownRatio);
-        }
-        drawOverlay(quad, overlay);
-        if (document.getElementsByClassName("autoCaptureButton")[0].classList.contains("enabled")) {
-            autoCapture(quad);
-        }
-    } else {
-        overlay.innerHTML = "";
-    }
-}
-const autoCapture = async (points) => {
-    if (previousResults.length >= 2) {
-        previousResults.push(points)
-        if (steady() == true) {
-            console.log("steady");
-            await capture();
-        } else {
-            console.log("shift result");
-            previousResults.shift();
-        }
-    } else {
-        console.log("add result");
-        previousResults.push(points);
-    }
-}
-const steady = () => {
-    let iou1 = intersectionOverUnion(previousResults[0].location.points, previousResults[1].location.points);
-    let iou2 = intersectionOverUnion(previousResults[1].location.points, previousResults[2].location.points);
-    let iou3 = intersectionOverUnion(previousResults[0].location.points, previousResults[2].location.points);
-    console.log(iou1);
-    console.log(iou2);
-    console.log(iou3);
-    if (iou1 > 0.9 && iou2 > 0.9 && iou3 > 0.9) {
-        return true;
-    } else {
-        return false;
-    }
 }
 const loadNormalizedAndFilterImages = async () => {
     let modes = ["blackWhite", "grayscale", "color"];
@@ -403,115 +334,6 @@ const registerEventsForCropper = () => {
         startSelectedCamera();
     });
 }
-const replicatedScaledQuad = (quad, scaleDownRatio) => {
-    let newQuad = JSON.parse(JSON.stringify(quad));
-    let points = newQuad.location.points;
-    for (let index = 0; index < points.length; index++) {
-        const point = points[index];
-        point.x = parseInt(point.x * scaleDownRatio);
-        point.y = parseInt(point.y * scaleDownRatio);
-    }
-    return newQuad;
-}
-const scaleQuad = (quad, scaleDownRatio) => {
-    let points = quad.location.points;
-    for (let index = 0; index < points.length; index++) {
-        const point = points[index];
-        point.x = parseInt(point.x / scaleDownRatio);
-        point.y = parseInt(point.y / scaleDownRatio);
-    }
-}
-const drawOverlay = (quad, svg) => {
-    let points = quad.location.points;
-    let polygon;
-    if (svg.getElementsByTagName("polygon").length === 1) {
-        polygon = svg.getElementsByTagName("polygon")[0];
-    } else {
-        polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
-        polygon.setAttribute("class", "detectedPolygon");
-        svg.appendChild(polygon);
-    }
-    polygon.setAttribute("points", getPointsData(points));
-}
-const getPointsData = (points) => {
-    let pointsData = points[0].x + "," + points[0].y + " ";
-    pointsData = pointsData + points[1].x + "," + points[1].y + " ";
-    pointsData = pointsData + points[2].x + "," + points[2].y + " ";
-    pointsData = pointsData + points[3].x + "," + points[3].y;
-    return pointsData;
-}
-const capture = async () => {
-    stopDetecting();
-    resetCropper();
-    let imageCaptured = document.getElementsByClassName("imageCaptured")[0];
-    imageCaptured.onload = function () {
-        loadPhotoToCropper(imageCaptured);
-    }
-
-    if (imageCapture) {
-        try {
-            console.log("take photo");
-            await takePhoto(imageCaptured);
-        } catch (error) {
-            console.log(error);
-            captureFullFrame(imageCaptured);
-        }
-    } else {
-        captureFullFrame(imageCaptured);
-    }
-    resetPreviousStatus();
-    stop();
-}
-const captureFullFrame = (img) => {
-    let cvs = document.getElementsByClassName("hiddenCVS")[0];
-    captureFrame(cvs);
-    img.src = cvs.toDataURL();
-}
-const captureFrame = (canvas, enableScale) => {
-    let w = video.videoWidth;
-    let h = video.videoHeight;
-    let scaleDownRatio = 1;
-    if (enableScale === true) {
-        if (w > 2000 || h > 2000) {
-            w = 1080;
-            h = w * (video.videoHeight / video.videoWidth);
-            scaleDownRatio = w / video.videoWidth;
-        }
-    }
-    canvas.width = w;
-    canvas.height = h;
-    let ctx = canvas.getContext('2d');
-    ctx.drawImage(video, 0, 0, w, h);
-    return scaleDownRatio;
-}
-const resetCropper = () => {
-    let cropper = document.querySelector("image-cropper");
-    cropper.quad = null;
-    cropper.img = null;
-}
-const resetPreviousStatus = () => {
-    rotationDegree = 0;
-    document.getElementById("normalized").style.transform = "";
-    document.getElementsByClassName("flashButton")[0].classList.remove("invert");
-    if (document.querySelector(".filterImg.selected")) {
-        document.querySelector(".filterImg.selected").classList.remove("selected");
-    }
-    if (document.querySelector(".filterImg.selected")) {
-        document.querySelector(".filterImg.selected").classList.remove("selected");
-    }
-    toggleFilterList(true);
-}
-const toggleFilterList = (hide) => {
-    let filterButton = document.getElementsByClassName("filterButton")[0];
-    let filterList = document.getElementsByClassName("filterList")[0];
-    if (filterButton.classList.contains("invert") || hide === true) {
-        filterButton.classList.remove("invert");
-        filterList.style.display = "none";
-    } else {
-        filterButton.classList.add("invert");
-        filterList.style.display = "";
-    }
-}
 const initDDN = async () => {
     Dynamsoft.DDN.DocumentNormalizer.license = "DLS2eyJoYW5kc2hha2VDb2RlIjoiMTAzMDc0ODA1LVRYbFhaV0pRY205cSIsIm1haW5TZXJ2ZXJVUkwiOiJodHRwczovL21kbHMuZHluYW1zb2Z0b25saW5lLmNvbSIsIm9yZ2FuaXphdGlvbklEIjoiMTAzMDc0ODA1Iiwic3RhbmRieVNlcnZlclVSTCI6Imh0dHBzOi8vc2Rscy5keW5hbXNvZnRvbmxpbmUuY29tIiwiY2hlY2tDb2RlIjoxMDA1MTM4NDQ0fQ==";
     ddn = await Dynamsoft.DDN.DocumentNormalizer.createInstance();
@@ -522,13 +344,6 @@ onMounted(() => {
     isCameraOpen.value = true;
     createCameraElement();
     registerEventsForCropper()
-    if (camera.value) {
-        camera.value.addEventListener('loadeddata', () => {
-            console.log("video started");
-            document.getElementsByClassName("overlay")[0].setAttribute("viewBox", "0 0 " + video.videoWidth + " " + video.videoHeight);
-            startDetecting();
-        });
-    }
 })
 </script>
 
