@@ -180,7 +180,7 @@ const createCameraElement = () => {
     if (vids) {
         vids.addEventListener('loadeddata', (event) => {
             console.log("video started");
-            document.getElementsByClassName("overlay")[0].setAttribute("viewBox", "0 0 " + vid.videoWidth + " " + vid.videoHeight);
+            document.getElementsByClassName("overlay")[0].setAttribute("viewBox", "0 0 " + vids.videoWidth + " " + vids.videoHeight);
             startDetecting();
         });
     }
