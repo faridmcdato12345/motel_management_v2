@@ -517,12 +517,14 @@ const getPointsData = (points) => {
 const capture = async () => {
     stopDetecting();
     resetCropper();
+    let imageCaptured = document.getElementsByClassName("imageCaptured")[0];
 
-    let imageCaptured = capturedImage.value
     console.log("imageCaptured:", imageCaptured)
-    imageCaptured.onload = function () {
-        loadPhotoToCropper(imageCaptured);
-    }
+    const loadImage = new Promise((resolve) => {
+        imageCaptured.onload = () => {
+            resolve();
+        };
+    });
 
     if (imageCapture) {
         try {
@@ -535,6 +537,8 @@ const capture = async () => {
     } else {
         captureFullFrame(imageCaptured);
     }
+    await loadImage;
+    loadPhotoToCropper(imageCaptured);
     resetPreviousStatus();
     stop();
     let cropper = document.getElementsByClassName("cropper")[0];
