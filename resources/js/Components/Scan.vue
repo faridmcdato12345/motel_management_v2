@@ -47,7 +47,7 @@
                 <!-- <canvas v-show="isPhotoTaken" id="photoTaken" ref="canvas"></canvas> -->
                 <canvas class="hiddenCVSForFrame" style="display:none"></canvas>
                 <canvas class="hiddenCVS" style="display:none"></canvas>
-                <img class="imageCaptured" style="display:none" />
+                <img class="imageCaptured" style="display:none" ref="capturedImage" />
                 <svg class="overlay full absolute top-0" version="1.1" xmlns="http://www.w3.org/2000/svg">
                 </svg>
             </div>
@@ -141,6 +141,7 @@ const cameraRef = ref(null);
 const canvas = ref(null);
 const previousResults = ref([]);
 const interval = ref('');
+const capturedImage = ref(null)
 let vid
 let ddn
 let imageCapture
@@ -516,7 +517,8 @@ const getPointsData = (points) => {
 const capture = async () => {
     stopDetecting();
     resetCropper();
-    let imageCaptured = document.getElementsByClassName("imageCaptured")[0];
+    // let imageCaptured = document.getElementsByClassName("imageCaptured")[0];
+    let imageCaptured = capturedImage.value
     console.log("imageCaptured:", imageCaptured)
     imageCaptured.onload = function () {
         loadPhotoToCropper(imageCaptured);
