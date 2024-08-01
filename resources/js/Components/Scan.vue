@@ -517,7 +517,7 @@ const getPointsData = (points) => {
 const capture = async () => {
     stopDetecting();
     resetCropper();
-    // let imageCaptured = document.getElementsByClassName("imageCaptured")[0];
+
     let imageCaptured = capturedImage.value
     console.log("imageCaptured:", imageCaptured)
     imageCaptured.onload = function () {
