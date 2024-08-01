@@ -433,7 +433,7 @@ const play = (options) => {
             localStream = stream;
             // Attach local stream to video element
 
-            video.srcObject = stream;
+            vid.srcObject = stream;
 
             try {
                 if (localStream.getVideoTracks()[0].getCapabilities().torch === true) {
