@@ -603,8 +603,9 @@ const videoS = ref(false)
 onMounted(() => {
     initDDN()
     isCameraOpen.value = true;
-    startSelectedCamera()
     createCameraElement();
+    startSelectedCamera()
+
     registerEventsForCropper()
 })
 </script>
