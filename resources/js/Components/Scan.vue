@@ -603,8 +603,15 @@ const initDDN = async () => {
 const videoS = ref(false)
 onMounted(() => {
     initDDN()
-    isCameraOpen.value = true;
-    createCameraElement();
+    isCameraOpen.value = true
+    let vids = cameraRef.value
+    if (vids) {
+        vids.addEventListener('loadeddata', (event) => {
+            console.log("video started");
+            document.getElementsByClassName("overlay")[0].setAttribute("viewBox", "0 0 " + vids.videoWidth + " " + vids.videoHeight);
+            startDetecting();
+        });
+    }
     startSelectedCamera()
     registerEventsForCropper()
 })
