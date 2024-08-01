@@ -177,13 +177,12 @@ const checkFacingModeSupport = () => {
 }
 const createCameraElement = () => {
     let vids = cameraRef.value
-    if (vids) {
-        vids.addEventListener('loadeddata', (event) => {
-            console.log("video started");
-            document.getElementsByClassName("overlay")[0].setAttribute("viewBox", "0 0 " + vids.videoWidth + " " + vids.videoHeight);
-            startDetecting();
-        });
-    }
+    vid = document.querySelector('video');
+    vid.addEventListener('loadeddata', (event) => {
+        console.log("video started");
+        document.getElementsByClassName("overlay")[0].setAttribute("viewBox", "0 0 " + vid.videoWidth + " " + vid.videoHeight);
+        startDetecting();
+    });
 };
 
 const stopCameraStream = () => {
@@ -603,16 +602,14 @@ const initDDN = async () => {
 const videoS = ref(false)
 onMounted(() => {
     initDDN()
-    isCameraOpen.value = true
-    let vids = cameraRef.value
-    if (vids) {
-        vids.addEventListener('loadeddata', (event) => {
-            console.log("video started");
-            document.getElementsByClassName("overlay")[0].setAttribute("viewBox", "0 0 " + vids.videoWidth + " " + vids.videoHeight);
-            startDetecting();
-        });
-    }
-    // startSelectedCamera()
+    isCameraOpen.value = true;
+    vid = document.querySelector('video');
+    vid.addEventListener('loadeddata', (event) => {
+        console.log("video started");
+        document.getElementsByClassName("overlay")[0].setAttribute("viewBox", "0 0 " + vid.videoWidth + " " + vid.videoHeight);
+        startDetecting();
+    });
+    startSelectedCamera()
     registerEventsForCropper()
 })
 </script>
