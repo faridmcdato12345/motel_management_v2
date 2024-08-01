@@ -43,7 +43,7 @@
             <div v-if="isCameraOpen" v-show="!isLoading" class="camera-box w-full relative"
                 :class="{ flash: isShotPhoto }">
                 <div class="camera-shutter" :class="{ flash: isShotPhoto }"></div>
-                <video v-show="!isPhotoTaken" ref="camera" autoplay class="w-full"></video>
+                <video v-show="!isPhotoTaken" ref="cameraRef" autoplay class="w-full"></video>
                 <!-- <canvas v-show="isPhotoTaken" id="photoTaken" ref="canvas"></canvas> -->
                 <canvas class="hiddenCVSForFrame" style="display:none"></canvas>
                 <canvas class="hiddenCVS" style="display:none"></canvas>
@@ -137,7 +137,7 @@ const loading = ref(false)
 const scanType = ref('voucher')
 const doneTakePhoto = ref(false)
 const cameraDevices = ref([])
-const camera = ref(null);
+const cameraRef = ref(null);
 const canvas = ref(null);
 const previousResults = ref([]);
 const interval = ref('');
@@ -176,13 +176,14 @@ const checkFacingModeSupport = () => {
     })
 }
 const createCameraElement = () => {
-
-    vid = document.querySelector('video');
-    vid.addEventListener('loadeddata', (event) => {
-        console.log("video started");
-        document.getElementsByClassName("overlay")[0].setAttribute("viewBox", "0 0 " + vid.videoWidth + " " + vid.videoHeight);
-        startDetecting();
-    });
+    let vids = cameraRef.value
+    if (vids) {
+        vids.addEventListener('loadeddata', (event) => {
+            console.log("video started");
+            document.getElementsByClassName("overlay")[0].setAttribute("viewBox", "0 0 " + vid.videoWidth + " " + vid.videoHeight);
+            startDetecting();
+        });
+    }
 };
 
 const stopCameraStream = () => {
@@ -605,7 +606,6 @@ onMounted(() => {
     isCameraOpen.value = true;
     createCameraElement();
     startSelectedCamera()
-
     registerEventsForCropper()
 })
 </script>
