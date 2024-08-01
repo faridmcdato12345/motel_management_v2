@@ -147,6 +147,8 @@ let imageCapture
 let cameraSelect
 let resolutionSelect
 let localStream
+let rotationDegree = 0
+let detectedQuad
 const detecting = ref(false)
 
 const emit = defineEmits(['openAiResponse', 'updateData'])
