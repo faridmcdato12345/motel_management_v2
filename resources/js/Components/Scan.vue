@@ -250,6 +250,7 @@ const loadPhotoToCropper = async (img) => {
     console.log("img: ", img);
     console.log("cropper: ", cropper);
     let quads = await ddn.detectQuad(img);
+    console.log("quads: ", quads)
     if (quads.length == 0) {
         let x = img.width * 0.2;
         let width = img.width * 0.6;
@@ -267,7 +268,9 @@ const loadPhotoToCropper = async (img) => {
         })
     }
     detectedQuad = quads[0];
+    console.log("detectedQuad:", detectedQuad)
     cropper.quad = detectedQuad.location;
+    console.log("cropper.quad:", cropper.quad)
 }
 const startDetecting = () => {
     detecting.value = false;
