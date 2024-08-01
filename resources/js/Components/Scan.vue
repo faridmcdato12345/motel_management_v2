@@ -12,7 +12,7 @@
                 :class="{ flash: isShotPhoto }">
                 <div class="camera-shutter" :class="{ flash: isShotPhoto }"></div>
                 <video v-show="!isPhotoTaken" ref="camera" autoplay class="w-full"></video>
-                <canvas v-show="isPhotoTaken" id="photoTaken" ref="canvas"></canvas>
+                <!-- <canvas v-show="isPhotoTaken" id="photoTaken" ref="canvas"></canvas> -->
                 <canvas class="hiddenCVSForFrame" style="display:none"></canvas>
                 <canvas class="hiddenCVS" style="display:none"></canvas>
                 <img class="imageCaptured" style="display:none" />
@@ -536,11 +536,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-canvas {
-    width: 100% !important;
-    height: 100% !important;
-}
-
 .detectedPolygon {
     stroke: green;
     stroke-width: 2;
