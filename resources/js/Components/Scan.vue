@@ -14,6 +14,8 @@
                 <video v-show="!isPhotoTaken" ref="camera" autoplay class="w-full"></video>
                 <canvas v-show="isPhotoTaken" id="photoTaken" ref="canvas"></canvas>
                 <canvas class="hiddenCVSForFrame" style="display:none"></canvas>
+                <canvas class="hiddenCVS" style="display:none"></canvas>
+                <img class="imageCaptured" style="display:none" />
                 <svg class="overlay full absolute top-0" version="1.1" xmlns="http://www.w3.org/2000/svg">
                 </svg>
             </div>
