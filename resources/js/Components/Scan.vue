@@ -435,16 +435,16 @@ const play = (options) => {
             vid = document.querySelector('video');
             vid.srcObject = stream;
 
-            try {
-                if (localStream.getVideoTracks()[0].getCapabilities().torch === true) {
-                    console.log("torch supported");
-                    document.getElementsByClassName("flashButton")[0].style.display = "";
-                } else {
-                    document.getElementsByClassName("flashButton")[0].style.display = "none";
-                }
-            } catch (error) {
-                document.getElementsByClassName("flashButton")[0].style.display = "none";
-            }
+            // try {
+            //     if (localStream.getVideoTracks()[0].getCapabilities().torch === true) {
+            //         console.log("torch supported");
+            //         document.getElementsByClassName("flashButton")[0].style.display = "";
+            //     } else {
+            //         document.getElementsByClassName("flashButton")[0].style.display = "none";
+            //     }
+            // } catch (error) {
+            //     document.getElementsByClassName("flashButton")[0].style.display = "none";
+            // }
 
             if ("ImageCapture" in window) {
                 console.log("ImageCapture supported");
