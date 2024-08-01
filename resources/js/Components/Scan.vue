@@ -111,6 +111,7 @@ const previousResults = ref([]);
 const interval = ref('');
 let vid
 let ddn
+let imageCapture
 const detecting = ref(false)
 
 const emit = defineEmits(['openAiResponse', 'updateData'])
