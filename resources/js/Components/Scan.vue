@@ -190,26 +190,7 @@ const stopCameraStream = () => {
     });
 };
 
-const takePhoto = () => {
-    if (!isPhotoTaken.value) {
-        isShotPhoto.value = true;
 
-        const FLASH_TIMEOUT = 50;
-
-        setTimeout(() => {
-            isShotPhoto.value = false;
-        }, FLASH_TIMEOUT);
-    }
-    if (done.value == false) {
-        done.value = true
-    }
-    isPhotoTaken.value = !isPhotoTaken.value;
-
-    const context = canvas.value.getContext('2d');
-    context.clearRect(0, 0, canvas.value.width, canvas.value.height);
-    context.drawImage(camera.value, 0, 0, canvas.value.width, canvas.value.height);
-    doneTakePhoto.value = true
-};
 const nextStep = () => {
     emit('updateData', responseData.value)
 }
@@ -489,9 +470,20 @@ const captureFrame = (canvas, enableScale) => {
     }
     canvas.width = w;
     canvas.height = h;
-    let ctx = canvas.getContext('2d');
+    let ctx = canvas.valuegetContext('2d');
     ctx.drawImage(vid, 0, 0, w, h);
     return scaleDownRatio;
+}
+const takePhoto = (img) => {
+    return new Promise(async function (resolve, reject) {
+        try {
+            let blob = await imageCapture.takePhoto();
+            img.src = URL.createObjectURL(blob);
+            resolve(true);
+        } catch (error) {
+            reject(error); //it may not work with virtual cameras
+        }
+    });
 }
 const resetCropper = () => {
     let cropper = document.querySelector("image-cropper");
