@@ -577,7 +577,6 @@ const resetCropper = () => {
 const resetPreviousStatus = () => {
     rotationDegree = 0;
     document.getElementById("normalized").style.transform = "";
-    document.getElementsByClassName("flashButton")[0].classList.remove("invert");
     if (document.querySelector(".filterImg.selected")) {
         document.querySelector(".filterImg.selected").classList.remove("selected");
     }
