@@ -518,16 +518,12 @@ const capture = async () => {
     stopDetecting();
     resetCropper();
     let imageCaptured = document.getElementsByClassName("imageCaptured")[0];
-
-
     const loadImage = new Promise((resolve) => {
         imageCaptured.onload = () => {
             resolve();
         };
     });
-    await loadImage;
-    loadPhotoToCropper(imageCaptured);
-    console.log("imageCaptured:", imageCaptured)
+
     if (imageCapture) {
         try {
             console.log("take photo");
@@ -539,6 +535,9 @@ const capture = async () => {
     } else {
         captureFullFrame(imageCaptured);
     }
+    await loadImage;
+    console.log("imageCaptured:", imageCaptured)
+    loadPhotoToCropper(imageCaptured);
     resetPreviousStatus();
     stop();
     let cropper = document.getElementsByClassName("cropper")[0];
