@@ -146,6 +146,7 @@ let ddn
 let imageCapture
 let cameraSelect
 let resolutionSelect
+let localStream
 const detecting = ref(false)
 
 const emit = defineEmits(['openAiResponse', 'updateData'])
