@@ -515,6 +515,7 @@ const capture = async () => {
     stopDetecting();
     resetCropper();
     let imageCaptured = document.getElementsByClassName("imageCaptured")[0];
+    console.log("imageCaptured:", imageCaptured)
     imageCaptured.onload = function () {
         loadPhotoToCropper(imageCaptured);
     }
