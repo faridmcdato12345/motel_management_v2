@@ -612,7 +612,7 @@ onMounted(() => {
             startDetecting();
         });
     }
-    startSelectedCamera()
+    // startSelectedCamera()
     registerEventsForCropper()
 })
 </script>
