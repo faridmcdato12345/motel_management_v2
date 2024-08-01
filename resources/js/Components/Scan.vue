@@ -1,6 +1,38 @@
 <template>
     <div class="">
         <div class="relative">
+            <div class="home" style="display: none">
+                <select class="cameraSelect"></select>
+                <br />
+                <select class="resolutionSelect">
+                    <option value="1280x720">1280x720</option>
+                    <option value="1920x1080">1920x1080</option>
+                    <option value="3840x2160">3840x2160</option>
+                </select>
+                <br />
+                <button class="startCameraBtn">Start Camera</button>
+                <input type="file" id="imageFile" style="display:none;" onchange="loadImageFromFile();"
+                    accept=".jpg,.jpeg,.png,.bmp" />
+                <button class="loadImageBtn" style="display:none;">Load Image</button>
+                <div class="loadingStatus">Loading...</div>
+                <div class="results"></div>
+            </div>
+            <div class="home" style="display: none">
+                <select class="cameraSelect"></select>
+                <br />
+                <select class="resolutionSelect">
+                    <option value="1280x720">1280x720</option>
+                    <option value="1920x1080">1920x1080</option>
+                    <option value="3840x2160">3840x2160</option>
+                </select>
+                <br />
+                <button class="startCameraBtn">Start Camera</button>
+                <input type="file" id="imageFile" style="display:none;" onchange="loadImageFromFile();"
+                    accept=".jpg,.jpeg,.png,.bmp" />
+                <button class="loadImageBtn" style="display:none;">Load Image</button>
+                <div class="loadingStatus">Loading...</div>
+                <div class="results"></div>
+            </div>
             <div v-show="isCameraOpen && isLoading" class="camera-loading">
                 <ul class="loader-circle">
                     <li></li>
@@ -112,6 +144,7 @@ const interval = ref('');
 let vid
 let ddn
 let imageCapture
+const cameraSelect = document.getElementsByClassName("cameraSelect")[0];
 const detecting = ref(false)
 
 const emit = defineEmits(['openAiResponse', 'updateData'])
@@ -141,41 +174,7 @@ const checkFacingModeSupport = () => {
     })
 }
 const createCameraElement = async () => {
-    checkFacingModeSupport().then((isSupported) => {
-        if (isSupported) {
-            console.log('Facing Mode is supported');
-        } else {
-            console.log('Facing Mode is not supported');
-        }
-    })
-    isLoading.value = true;
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    const backCamera = devices.find(device => device.kind === 'videoinput' && device.label.toLowerCase().includes('back'));
-    for (let i = 0; i < devices.length; i++) {
-        let device = devices[i];
-        if (device.kind == 'videoinput') { // filter out audio devices
-            cameraDevices.value = device;
-        }
-    }
-    const constraints = {
-        video: {
-            width: 1280,
-            height: 720,
-            facingMode: 'environment' // This should normally work
-        }
-    };
-    if (backCamera) {
-        constraints.video.deviceId = { exact: backCamera.deviceId };
-    }
-    navigator.mediaDevices.getUserMedia(constraints)
-        .then((stream) => {
-            isLoading.value = false;
-            camera.value.srcObject = stream;
-        })
-        .catch((error) => {
-            isLoading.value = false;
-            alert("May the browser didn't support or there is some errors.");
-        });
+
     vid = document.querySelector('video');
     vid.addEventListener('loadeddata', (event) => {
         console.log("video started");
@@ -384,16 +383,93 @@ const registerEventsForCropper = () => {
         console.log("confirm");
         const quad = await cropper.getQuad();
         detectedQuad.location = quad;
-        toggleStatusMask("Normalizing...");
         await loadNormalizedAndFilterImages();
         document.getElementById("normalized").src = document.querySelector(".color .filterImg").normalizedImage;
-        toggleStatusMask("");
-        switchPage(3);
     });
     cropper.addEventListener("canceled", function () {
         startSelectedCamera();
     });
 }
+const startSelectedCamera = () => {
+    let options = {};
+    if (cameraSelect.selectedIndex != -1) {
+        options.deviceId = cameraSelect.selectedOptions[0].value;
+    }
+    if (resolutionSelect.selectedIndex != -1) {
+        let width = parseInt(resolutionSelect.selectedOptions[0].value.split("x")[0]);
+        let height = parseInt(resolutionSelect.selectedOptions[0].value.split("x")[1]);
+        let res = { width: width, height: height };
+        options.desiredResolution = res;
+    }
+    play(options);
+}
+const play = (options) => {
+    return new Promise(function (resolve, reject) {
+        stop(); // close before play
+        let constraints = {};
+
+        if (options.deviceId) {
+            constraints = {
+                video: { deviceId: options.deviceId },
+                audio: false
+            }
+        } else {
+            constraints = {
+                video: { width: 1280, height: 720, facingMode: { exact: "environment" } },
+                audio: false
+            }
+        }
+
+        if (options.desiredResolution) {
+            constraints["video"]["width"] = options.desiredResolution.width;
+            constraints["video"]["height"] = options.desiredResolution.height;
+        }
+        console.log(constraints);
+        navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
+            localStream = stream;
+            // Attach local stream to video element
+
+            video.srcObject = stream;
+
+            try {
+                if (localStream.getVideoTracks()[0].getCapabilities().torch === true) {
+                    console.log("torch supported");
+                    document.getElementsByClassName("flashButton")[0].style.display = "";
+                } else {
+                    document.getElementsByClassName("flashButton")[0].style.display = "none";
+                }
+            } catch (error) {
+                document.getElementsByClassName("flashButton")[0].style.display = "none";
+            }
+
+            if ("ImageCapture" in window) {
+                console.log("ImageCapture supported");
+                const track = localStream.getVideoTracks()[0];
+                imageCapture = new ImageCapture(track);
+            } else {
+                console.log("ImageCapture not supported");
+            }
+            resolve(true);
+        }).catch(function (err) {
+            console.error('getUserMediaError', err, err.stack);
+            reject(err);
+        });
+    });
+
+}
+const stop = () => {
+    try {
+        if (localStream) {
+            const tracks = localStream.getTracks();
+            for (let i = 0; i < tracks.length; i++) {
+                const track = tracks[i];
+                track.stop();
+            }
+        }
+    } catch (e) {
+        alert(e.message);
+    }
+};
 const replicatedScaledQuad = (quad, scaleDownRatio) => {
     let newQuad = JSON.parse(JSON.stringify(quad));
     let points = newQuad.location.points;
@@ -523,6 +599,7 @@ const videoS = ref(false)
 onMounted(() => {
     initDDN()
     isCameraOpen.value = true;
+    startSelectedCamera()
     createCameraElement();
     registerEventsForCropper()
 })
