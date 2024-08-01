@@ -61,7 +61,7 @@
             <div v-if="isCameraOpen && !isLoading"
                 class="absolute bottom-0 camera-shoot flex items-center justify-center mt-4 space-x-4 bg-blue-400 py-5 w-full">
                 <button class="bg-blue-500 text-white px-4 py-2 rounded" @click.prevent="takePhoto">Retake</button>
-                <div class="relative" @click.prevent="takePhoto">
+                <div class="relative" @click.prevent="capture">
                     <div class="w-20 h-20 rounded-full bg-blue-500 flex items-center justify-center">
                         <div class="w-16 h-16 rounded-full border-4 border-white bg-blue-600"></div>
                     </div>
