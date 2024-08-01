@@ -604,13 +604,24 @@ onMounted(() => {
     initDDN()
     isCameraOpen.value = true;
     vid = document.querySelector('video');
-    vid.addEventListener('loadeddata', (event) => {
-        console.log("video started");
-        document.getElementsByClassName("overlay")[0].setAttribute("viewBox", "0 0 " + vid.videoWidth + " " + vid.videoHeight);
-        startDetecting();
-    });
-    startSelectedCamera()
-    registerEventsForCropper()
+    if (vid) {
+        vid.addEventListener('loadeddata', (event) => {
+            console.log("video started");
+
+            const overlayElement = document.getElementsByClassName("overlay")[0];
+            if (overlayElement) {
+                overlayElement.setAttribute("viewBox", "0 0 " + vid.videoWidth + " " + vid.videoHeight);
+                startDetecting();
+            } else {
+                console.warn("Overlay element not found.");
+            }
+        });
+
+        startSelectedCamera();
+        registerEventsForCropper();
+    } else {
+        console.warn("Video element not found.");
+    }
 })
 </script>
 
