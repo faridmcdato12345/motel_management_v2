@@ -175,7 +175,7 @@ const checkFacingModeSupport = () => {
             .catch(() => resolve(false))
     })
 }
-const createCameraElement = async () => {
+const createCameraElement = () => {
 
     vid = document.querySelector('video');
     vid.addEventListener('loadeddata', (event) => {
@@ -432,7 +432,7 @@ const play = (options) => {
         navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
             localStream = stream;
             // Attach local stream to video element
-
+            vid = document.querySelector('video');
             vid.srcObject = stream;
 
             try {
