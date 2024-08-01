@@ -535,6 +535,8 @@ const capture = async () => {
     }
     resetPreviousStatus();
     stop();
+    let cropper = document.getElementsByClassName("cropper")[0];
+    cropper.style.display = ""
 }
 const captureFullFrame = (img) => {
     let cvs = document.getElementsByClassName("hiddenCVS")[0];
