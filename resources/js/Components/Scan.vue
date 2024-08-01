@@ -246,6 +246,7 @@ const uploadPhoto = async () => {
 const loadPhotoToCropper = async (img) => {
     let cropper = document.querySelector("image-cropper");
     cropper.img = img;
+    console.log("img: ", img);
     console.log("cropper: ", cropper);
     let quads = await ddn.detectQuad(img);
     if (quads.length == 0) {
