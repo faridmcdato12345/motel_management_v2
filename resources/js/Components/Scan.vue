@@ -470,7 +470,7 @@ const captureFrame = (canvas, enableScale) => {
     }
     canvas.width = w;
     canvas.height = h;
-    let ctx = canvas.valuegetContext('2d');
+    let ctx = canvas.getContext('2d');
     ctx.drawImage(vid, 0, 0, w, h);
     return scaleDownRatio;
 }
