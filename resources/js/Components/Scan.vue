@@ -600,14 +600,10 @@ const initDDN = async () => {
     ddn.maxCvsSideLength = 9999;
 }
 const videoS = ref(false)
-onMounted(() => {
-    initDDN()
-    isCameraOpen.value = true;
-    startSelectedCamera();
-    registerEventsForCropper();
-
+const waitForVideoElement = () => {
     vid = document.querySelector('video');
     if (vid) {
+        console.log("Video element found");
         vid.addEventListener('loadeddata', () => {
             console.log("Video started");
             const overlayElement = document.getElementsByClassName("overlay")[0];
@@ -619,8 +615,15 @@ onMounted(() => {
             }
         });
     } else {
-        console.error("Video element not found.");
+        requestAnimationFrame(waitForVideoElement);
     }
+}
+onMounted(() => {
+    initDDN()
+    isCameraOpen.value = true;
+    startSelectedCamera();
+    registerEventsForCropper();
+    waitForVideoElement();
 })
 </script>
 
