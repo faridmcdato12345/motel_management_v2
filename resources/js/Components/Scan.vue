@@ -144,7 +144,8 @@ const interval = ref('');
 let vid
 let ddn
 let imageCapture
-const cameraSelect = document.getElementsByClassName("cameraSelect")[0];
+let cameraSelect
+let resolutionSelect
 const detecting = ref(false)
 
 const emit = defineEmits(['openAiResponse', 'updateData'])
@@ -392,9 +393,11 @@ const registerEventsForCropper = () => {
 }
 const startSelectedCamera = () => {
     let options = {};
+    cameraSelect = document.getElementsByClassName("cameraSelect")[0];
     if (cameraSelect.selectedIndex != -1) {
         options.deviceId = cameraSelect.selectedOptions[0].value;
     }
+    resolutionSelect = document.getElementsByClassName("resolutionSelect")[0];
     if (resolutionSelect.selectedIndex != -1) {
         let width = parseInt(resolutionSelect.selectedOptions[0].value.split("x")[0]);
         let height = parseInt(resolutionSelect.selectedOptions[0].value.split("x")[1]);
